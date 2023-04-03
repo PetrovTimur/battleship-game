@@ -19,4 +19,10 @@
 
 Интерфейс:
 
-# ???
+Стартовое окно с выбором режима и полем для ввода никнейма:
+
+![image](https://user-images.githubusercontent.com/126547500/229142036-a6d87963-d58d-48b9-8bc7-a68c880a7d5c.png)
+
+Сам бой:
+
+![image](https://user-images.githubusercontent.com/126547500/229198534-df03ce3d-0224-4b92-a9be-3c2d688424fa.png)
