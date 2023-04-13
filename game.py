@@ -1,126 +1,21 @@
-from tkinter import Tk, Label
-from tkinter import ttk
-
-class Shot:
-    def __init__(self, cell, player):
-        'Cell format letter and number for example "a1", player format is int, 0-ENEMY, 1-YOU'
-        self.cell = cell
-        self.player = player
+FIELD_SIZE = 10
+SHIPS_PLACED = 0
 
 
-    def cordx(self):
-        return self.cell[0]
-    
-
-    def cordy(self):
-        return int(self.cell[1])
-    
-
-    def cord(self):
-        return self.cell
-    
-
-    def get_player(self):
-        return self.player
-    
-class Fields:
-    def __init__(self, your_field, enemy_field):
-        'Two lists 8*8 with 0-Nothing; 1-ship; 2-nothing, shooted; 3-ship, shooted'
-        self.your_field = your_field
-        self.enemy_field = enemy_field
-
-    
-    def enemy(self):
-        return self.enemy_field
-    
-
-    def player(self):
-        return self.your_field
-    
-
-    def any_yours_ship(self):
-        flag = False
-        for i in self.your_field:
-            if i==1:
-                flag = True
-                break
-        return flag
-    
-
-    def any_enemys_ship(self):
-        flag = False
-        for i in self.enemy_field:
-            if i==1:
-                flag = True
-                break
-        return flag
+class Ship:
+    def __init__(self, size):
+        self.size = size
+        self.state = [0] * self.size
+        self.afloat = True
+        self.placed = False
 
 
-
-    def shoot(self, cords):
-        def make_shot(field, cord):
-            x = ord(cord[0])-ord('a')
-            y = int(cord[1])
-            if field[x][y] == SHIP:
-                field[x][y] = SHIP_SHOOTED
-            elif field[x][y] == NOTHING:
-                field[x][y] = NOTHING_SHOOTED
-            else:
-                pass
-
-
-        if cords.get_player == ENEMY:
-            make_shot(self.enemy_field, cords.cord())
-        else:
-            cords.cord()
-            make_shot(self.your_field, cords.cord())
-
-        
-
-
-def start_button_pressed():
-    global fields
-    fields = place_ships()
-    window.quit()
-
-
-def exit_button_pressed():
-    window.destroy()
-    exit()
-
-
-def shot_button_pressed():
-    global fields, state
-    cords = Shot('a1', PLAYER)
-    state, fields = game_logic(fields, cords)
-    if (state == WIN) or (state == LOSE):
-        window.quit()
-
-
-def game(win):
-    destroy_all(win)
-    shot_button = ttk.Button(window, text="Shot", command=shot_button_pressed)
-    shot_button.pack()
-    exit_button = ttk.Button(window, text="Exit", command=exit_button_pressed)
-    exit_button.pack()
-    global state
-    state = PLAYERS_TURN
-
-    win.mainloop()
-
-
-def destroy_all(window):
-    for widget in window.winfo_children():
-        widget.destroy()
-
-
-def place_ships():
-    global fields
-    return fields
-
-
-def send_to_enemy(cords):
-    return
+class Field:
+    def __init__(self):
+        self.cells = [([0] * 10) for i in range(10)]
+        self.ships = [Ship(2), Ship(3), Ship(4)]
+        self.alive = True
+    #     TODO add right amount of ships
 
 
 def game_logic(fields, cords):
@@ -146,10 +41,12 @@ def wait_for_enemy_turn():
     return
 
 
-NOTHING = 0
-SHIP = 1
-NOTHING_SHOOTED  = 2
-SHIP_SHOOTED = 3
+class Game:
+    def __init__(self, mode):
+        self.mode = mode
+        self.turn_number = 0
+        self.player_field = Field()
+        self.enemy_field = Field()
 
 ENEMY = 0
 PLAYER = 1
