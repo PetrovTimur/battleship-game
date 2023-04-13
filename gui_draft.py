@@ -50,6 +50,12 @@ s = ttk.Style()
 s.theme_use('default')
 s.configure('Blue.TFrame', background='#406D96')
 s.configure('Blue.TButton', width=3, background='#355C7D')
+s.map("Blue.TButton", background=[('pressed', 'disabled', 'red'),
+                                  ('!pressed', 'disabled', 'black'),
+                                  # ('disabled', 'hover', 'yellow'),
+                                  ('hover', 'pink')])
+
+# TODO add different button styles
 
 mainframe = ttk.Frame(root, style='Blue.TFrame')
 mainframe.grid(column=0, row=0, sticky='nsew')
