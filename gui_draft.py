@@ -1,43 +1,69 @@
 from tkinter import *
 from tkinter import ttk
-import ai
 import game
+import ai
 
 FIELD_SIZE = 10
 
 
 def hover(button):
-    size = testGame.player_field.ships[game.SHIPS_PLACED].size
-    position = button.grid_info()['column'], button.grid_info()['row']
-    for i in range(size):
-        buttons1[position[0]][position[1] + i].state(['hover'])
+    if button.instate(['!disabled']):
+        size = testGame.player_field.ships[testGame.player_field.placed].size
+        position = button.grid_info()['column'], button.grid_info()['row']
+        for i in range(size):
+            buttons1[position[0]][position[1] + i].state(['hover'])
 
 
 def leave(button):
-    size = testGame.player_field.ships[game.SHIPS_PLACED].size
-    position = button.grid_info()['column'], button.grid_info()['row']
-    for i in range(size):
-        buttons1[position[0]][position[1] + i].state(['!hover'])
+    if button.instate(['!disabled']):
+        size = testGame.player_field.ships[testGame.player_field.placed].size
+        position = button.grid_info()['column'], button.grid_info()['row']
+        for i in range(size):
+            buttons1[position[0]][position[1] + i].state(['!hover'])
 
 
 def place(button):
-    size = testGame.player_field.ships[game.SHIPS_PLACED].size
-    position = button.grid_info()['column'], button.grid_info()['row']
-    for i in range(size):
-        buttons1[position[0]][position[1] + i].state(['disabled'])
+    if button.instate(['!disabled']):
+        size = testGame.player_field.ships[testGame.player_field.placed].size
+        position = button.grid_info()['column'], button.grid_info()['row']
+        coords = []
+        for i in range(size):
+            buttons1[position[0]][position[1] + i].state(['disabled', 'pressed'])
+            buttons1[position[0]][position[1] + i]['style'] = 'Ship.TButton'
 
-    testGame.player_field.ships[game.SHIPS_PLACED].placed = True
-    game.SHIPS_PLACED += 1
+            coords += [(position[0], position[1] + i)]
+
+        testGame.player_field.place(coords)
+        testGame.player_field.placed += 1
+
+        if testGame.player_field.check_placed():
+            update_field()
 
 # TODO check whether ship fits
-# TODO change style of the button after hit
+
+
+def update_field():
+    for i in range(FIELD_SIZE):
+        for j in range(FIELD_SIZE):
+            buttons1[i][j].state(['disabled'])
+            buttons2[i][j].state(['!disabled'])
 
 
 def step(button):
-    print(button.state())
-    print(button.state(['pressed', 'disabled']))
-    print(button.state())
-    buttons1[ai.shot()[0]][ai.shot()[1]].state(['disabled'])
+    position = button.grid_info()['column'], button.grid_info()['row']
+    hit = testGame.player_turn((position[0], position[1]))
+    if hit:
+        buttons2[position[0]][position[1]]['style'] = 'Hit.TButton'
+    else:
+        buttons2[position[0]][position[1]]['style'] = 'Miss.TButton'
+    buttons2[position[0]][position[1]].state(['disabled'])
+
+    new_position = ai.shot(testGame.player_field.cells)
+    hit = testGame.enemy_turn((new_position[0], new_position[1]))
+    if hit:
+        buttons1[new_position[0]][new_position[1]]['style'] = 'Hit.TButton'
+    else:
+        buttons1[new_position[0]][new_position[1]]['style'] = 'Miss.TButton'
 
 
 testGame = game.Game(mode=1)
@@ -46,14 +72,19 @@ root = Tk()
 root.title("Battleship")
 root.geometry('1280x720')
 
+root.minsize(1280, 720)
+
 s = ttk.Style()
 s.theme_use('default')
 s.configure('Blue.TFrame', background='#406D96')
 s.configure('Blue.TButton', width=3, background='#355C7D')
-s.map("Blue.TButton", background=[('pressed', 'disabled', 'red'),
-                                  ('!pressed', 'disabled', 'black'),
-                                  # ('disabled', 'hover', 'yellow'),
-                                  ('hover', 'pink')])
+s.configure('Ship.TButton', width=3)
+s.configure('Hit.TButton', width=3)
+s.configure('Miss.TButton', width=3)
+s.map('Blue.TButton', background=[('!pressed', 'disabled', '#26364a'), ('hover', 'pink')])
+s.map('Ship.TButton', background=[('disabled', 'grey')])
+s.map('Hit.TButton', background=[('disabled', 'orange')])
+s.map('Miss.TButton', background=[('disabled', 'black')])
 
 # TODO add different button styles
 
@@ -92,6 +123,7 @@ for i in range(FIELD_SIZE):
         buttons1[i][j].bind('<Leave>', lambda e, b=buttons1[i][j]: leave(b))
 
         buttons2[i][j].grid(column=i, row=j, sticky='nsew')
+        buttons2[i][j].state(['disabled'])
         buttons2[i][j].configure(command=lambda b=buttons2[i][j]: step(b))
 
 frame2.rowconfigure('all', weight=1)
