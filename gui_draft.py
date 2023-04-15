@@ -6,32 +6,55 @@ import ai
 FIELD_SIZE = 10
 
 
+def get_rotated_cords(pos, size, rot):
+        # rot = 0-up, 1-left, 2-down, 3-right
+        pos_num = (rot+1)%2
+        sign = (-2*rot**3+9*rot**2-7*rot-3)//3
+
+        coords = []
+        
+        for i in range(size):
+            coords.append((pos[0], pos[1]))
+
+            pos[pos_num] += sign
+        
+        return coords
+
+
+
 def hover(button):
     if button.instate(['!disabled']):
         size = testGame.player_field.ships[testGame.player_field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
-        for i in range(size):
-            buttons1[position[0]][position[1] + i].state(['hover'])
+
+        coords = []
+        coords = get_rotated_cords(list(position), size, testGame.turn_number)
+        for i in coords:
+            buttons1[i[0]][i[1]].state(['hover'])
 
 
 def leave(button):
     if button.instate(['!disabled']):
         size = testGame.player_field.ships[testGame.player_field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
-        for i in range(size):
-            buttons1[position[0]][position[1] + i].state(['!hover'])
+
+        coords = []
+        coords = get_rotated_cords(list(position), size, testGame.turn_number)
+        for i in coords:
+            buttons1[i[0]][i[1]].state(['!hover'])
 
 
 def place(button):
     if button.instate(['!disabled']):
         size = testGame.player_field.ships[testGame.player_field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
-        coords = []
-        for i in range(size):
-            buttons1[position[0]][position[1] + i].state(['disabled', 'pressed'])
-            buttons1[position[0]][position[1] + i]['style'] = 'Ship.TButton'
 
-            coords += [(position[0], position[1] + i)]
+        coords = []
+        coords = get_rotated_cords(list(position), size, testGame.turn_number)
+
+        for i in coords:
+            buttons1[i[0]][i[1]].state(['disabled', 'pressed'])
+            buttons1[i[0]][i[1]]['style'] = 'Ship.TButton'
 
         testGame.player_field.place(coords)
         testGame.player_field.placed += 1
