@@ -8,7 +8,7 @@ FIELD_SIZE = 10
 
 def hover(button):
     if button.instate(['!disabled']):
-        size = testGame.player_field.ships[testGame.player_field.placed].size
+        size = testGame.me.field.ships[testGame.me.field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
         for i in range(size):
             buttons1[position[0]][position[1] + i].state(['hover'])
@@ -16,7 +16,7 @@ def hover(button):
 
 def leave(button):
     if button.instate(['!disabled']):
-        size = testGame.player_field.ships[testGame.player_field.placed].size
+        size = testGame.me.field.ships[testGame.me.field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
         for i in range(size):
             buttons1[position[0]][position[1] + i].state(['!hover'])
@@ -24,7 +24,7 @@ def leave(button):
 
 def place(button):
     if button.instate(['!disabled']):
-        size = testGame.player_field.ships[testGame.player_field.placed].size
+        size = testGame.me.field.ships[testGame.me.field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
         coords = []
         for i in range(size):
@@ -33,10 +33,10 @@ def place(button):
 
             coords += [(position[0], position[1] + i)]
 
-        testGame.player_field.place(coords)
-        testGame.player_field.placed += 1
+        testGame.me.field.place(coords)
+        testGame.me.field.placed += 1
 
-        if testGame.player_field.check_placed():
+        if testGame.me.field.check_placed():
             update_field()
 
 # TODO check whether ship fits
@@ -58,7 +58,7 @@ def step(button):
         buttons2[position[0]][position[1]]['style'] = 'Miss.TButton'
     buttons2[position[0]][position[1]].state(['disabled'])
 
-    new_position = ai.shot(testGame.player_field.cells)
+    new_position = ai.shot(testGame.me.field.cells)
     hit = testGame.enemy_turn((new_position[0], new_position[1]))
     if hit:
         buttons1[new_position[0]][new_position[1]]['style'] = 'Hit.TButton'
