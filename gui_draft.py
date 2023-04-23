@@ -6,6 +6,15 @@ import ai
 FIELD_SIZE = 10
 
 
+def rotate(angle = 1):
+    if current_button == None:
+        print('No button')
+    else:
+        leave(current_button)
+        testGame.rotate(angle)
+        hover(current_button)
+
+
 def get_rotated_cords(pos, size, rot):
         # rot = 0-up, 1-left, 2-down, 3-right
         pos_num = ([1,0,1,0])[rot]
@@ -23,6 +32,8 @@ def get_rotated_cords(pos, size, rot):
 
 
 def hover(button):
+    global current_button
+    current_button = button
     if button.instate(['!disabled']):
         size = testGame.player_field.ships[testGame.player_field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
@@ -135,12 +146,14 @@ mainframe.rowconfigure(2, weight=0, minsize=480)
 buttons1 = [[ttk.Button(frame1, style='Blue.TButton') for i in range(FIELD_SIZE)] for j in range(FIELD_SIZE)]
 buttons2 = [[ttk.Button(frame2, style='Blue.TButton') for i in range(FIELD_SIZE)] for j in range(FIELD_SIZE)]
 
+current_button = None
+
 for i in range(FIELD_SIZE):
     for j in range(FIELD_SIZE):
         buttons1[i][j].grid(column=i, row=j, sticky='nsew')
         buttons1[i][j].configure(
             command=lambda b=buttons1[i][j]: place(b))
-        buttons1[i][j].bind('<MouseWheel>', lambda e: print('scroll'))
+        buttons1[i][j].bind('<Return>', lambda e: rotate())
         # TODO add ship turning for scroll
         buttons1[i][j].bind('<Enter>', lambda e, b=buttons1[i][j]: hover(b))
         buttons1[i][j].bind('<Leave>', lambda e, b=buttons1[i][j]: leave(b))
