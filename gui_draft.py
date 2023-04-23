@@ -8,8 +8,8 @@ FIELD_SIZE = 10
 
 def get_rotated_cords(pos, size, rot):
         # rot = 0-up, 1-left, 2-down, 3-right
-        pos_num = (rot+1)%2
-        sign = (-2*rot**3+9*rot**2-7*rot-3)//3
+        pos_num = ([1,0,1,0])[rot]
+        sign = ([1,1,-1,-1])[rot]
 
         coords = []
         
