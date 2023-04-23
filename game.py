@@ -63,6 +63,7 @@ class Game:
     def __init__(self, mode):
         self.mode = mode
         self.turn_number = 0
+        self.rotation_number = 0
         self.player_field = Field()
         self.enemy_field = Field()
 

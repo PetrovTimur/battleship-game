@@ -28,7 +28,7 @@ def hover(button):
         position = button.grid_info()['column'], button.grid_info()['row']
 
         coords = []
-        coords = get_rotated_cords(list(position), size, testGame.turn_number)
+        coords = get_rotated_cords(list(position), size, testGame.rotation_number)
         for i in coords:
             buttons1[i[0]][i[1]].state(['hover'])
 
@@ -39,7 +39,7 @@ def leave(button):
         position = button.grid_info()['column'], button.grid_info()['row']
 
         coords = []
-        coords = get_rotated_cords(list(position), size, testGame.turn_number)
+        coords = get_rotated_cords(list(position), size, testGame.rotation_number)
         for i in coords:
             buttons1[i[0]][i[1]].state(['!hover'])
 
@@ -50,7 +50,7 @@ def place(button):
         position = button.grid_info()['column'], button.grid_info()['row']
 
         coords = []
-        coords = get_rotated_cords(list(position), size, testGame.turn_number)
+        coords = get_rotated_cords(list(position), size, testGame.rotation_number)
 
         for i in coords:
             buttons1[i[0]][i[1]].state(['disabled', 'pressed'])
