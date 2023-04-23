@@ -1,13 +1,12 @@
-from tkinter import *
-from tkinter import ttk
+from tkinter import Tk, ttk
 import game
 import ai
 
 FIELD_SIZE = 10
 
 
-def rotate(angle = 1):
-    if current_button == None:
+def rotate(angle=1):
+    if current_button is None:
         print('No button')
     else:
         leave(current_button)
@@ -16,22 +15,21 @@ def rotate(angle = 1):
 
 
 def get_rotated_cords(pos, size, rot):
-        # rot = 0-up, 1-left, 2-down, 3-right
-        pos_num = ([1,0,1,0])[rot]
-        sign = ([1,1,-1,-1])[rot]
+    # rot = 0-up, 1-left, 2-down, 3-right
+    pos_num = ([1, 0, 1, 0])[rot]
+    sign = ([1, 1, -1, -1])[rot]
 
-        coords = []
-        
-        for i in range(size):
-            coords.append((pos[0], pos[1]))
+    coords = []
 
-            pos[pos_num] += sign
-            if ((pos[0] >= FIELD_SIZE) or (pos[1] >= FIELD_SIZE)
-                or (pos[0] < 0) or (pos[1] < 0)):
-                break
-        
-        return coords
+    for i in range(size):
+        coords.append((pos[0], pos[1]))
 
+        pos[pos_num] += sign
+        if ((pos[0] >= FIELD_SIZE) or (pos[1] >= FIELD_SIZE)
+           or (pos[0] < 0) or (pos[1] < 0)):
+            break
+
+    return coords
 
 
 def hover(button):
@@ -148,8 +146,10 @@ mainframe.columnconfigure((1, 4), weight=0, minsize=480)
 mainframe.rowconfigure((0, 1, 3), weight=1, minsize=80)
 mainframe.rowconfigure(2, weight=0, minsize=480)
 
-buttons1 = [[ttk.Button(frame1, style='Blue.TButton') for i in range(FIELD_SIZE)] for j in range(FIELD_SIZE)]
-buttons2 = [[ttk.Button(frame2, style='Blue.TButton') for i in range(FIELD_SIZE)] for j in range(FIELD_SIZE)]
+buttons1 = [[ttk.Button(frame1, style='Blue.TButton') for i in range(FIELD_SIZE)]
+            for j in range(FIELD_SIZE)]
+buttons2 = [[ttk.Button(frame2, style='Blue.TButton') for i in range(FIELD_SIZE)]
+            for j in range(FIELD_SIZE)]
 
 current_button = None
 
