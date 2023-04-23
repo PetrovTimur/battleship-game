@@ -82,7 +82,6 @@ class Game:
 
     def enemy_turn(self, cell):
         return self.me.update_field(cell)
-    
 
-    def rotate(self, angle = 1):
-        self.rotation_number = (self.rotation_number + angle)%4
+    def rotate(self, angle=1):
+        self.rotation_number = (self.rotation_number + angle) % 4
