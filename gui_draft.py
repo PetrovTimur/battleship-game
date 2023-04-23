@@ -38,7 +38,7 @@ def hover(button):
     global current_button
     current_button = button
     if button.instate(['!disabled']):
-        size = testGame.player_field.ships[testGame.player_field.placed].size
+        size = testGame.me.field.ships[testGame.me.field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
 
         coords = []
@@ -49,7 +49,7 @@ def hover(button):
 
 def leave(button):
     if button.instate(['!disabled']):
-        size = testGame.player_field.ships[testGame.player_field.placed].size
+        size = testGame.me.field.ships[testGame.me.field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
 
         coords = []
@@ -60,7 +60,7 @@ def leave(button):
 
 def place(button):
     if button.instate(['!disabled']):
-        size = testGame.player_field.ships[testGame.player_field.placed].size
+        size = testGame.me.field.ships[testGame.me.field.placed].size
         position = button.grid_info()['column'], button.grid_info()['row']
 
         coords = []
@@ -72,10 +72,10 @@ def place(button):
             buttons1[i[0]][i[1]].state(['disabled', 'pressed'])
             buttons1[i[0]][i[1]]['style'] = 'Ship.TButton'
 
-        testGame.player_field.place(coords)
-        testGame.player_field.placed += 1
+        testGame.me.field.place(coords)
+        testGame.me.field.placed += 1
 
-        if testGame.player_field.check_placed():
+        if testGame.me.field.check_placed():
             update_field()
 
 # TODO check whether ship fits
@@ -97,7 +97,7 @@ def step(button):
         buttons2[position[0]][position[1]]['style'] = 'Miss.TButton'
     buttons2[position[0]][position[1]].state(['disabled'])
 
-    new_position = ai.shot(testGame.player_field.cells)
+    new_position = ai.shot(testGame.me.field.cells)
     hit = testGame.enemy_turn((new_position[0], new_position[1]))
     if hit:
         buttons1[new_position[0]][new_position[1]]['style'] = 'Hit.TButton'
