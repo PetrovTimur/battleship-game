@@ -26,6 +26,9 @@ def get_rotated_cords(pos, size, rot):
             coords.append((pos[0], pos[1]))
 
             pos[pos_num] += sign
+            if ((pos[0] >= FIELD_SIZE) or (pos[1] >= FIELD_SIZE)
+                or (pos[0] < 0) or (pos[1] < 0)):
+                break
         
         return coords
 
@@ -62,6 +65,8 @@ def place(button):
 
         coords = []
         coords = get_rotated_cords(list(position), size, testGame.rotation_number)
+        if (len(coords) < size):
+            return
 
         for i in coords:
             buttons1[i[0]][i[1]].state(['disabled', 'pressed'])
