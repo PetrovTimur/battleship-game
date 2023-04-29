@@ -1,4 +1,4 @@
-from tkinter import Tk
+from tkinter import Tk, ttk
 from menu import StartScreen, SettingsScreen
 
 
@@ -12,6 +12,9 @@ class App(Tk):
         self.rowconfigure(0, weight=1)
         self.geometry('1280x720')
         self.resizable(False, False)
+
+        ttk.Style().theme_use('default')
+        ttk.Style().configure('Blue.TFrame', background='#406D96')
 
         self.bind('<<Main>>', lambda e: self.change_screen('Main'))
         self.bind('<<Settings>>', lambda e: self.change_screen('Settings'))

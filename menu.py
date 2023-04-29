@@ -1,4 +1,4 @@
-from tkinter import VERTICAL
+from tkinter import StringVar, BooleanVar
 from tkinter import ttk
 
 
@@ -51,26 +51,64 @@ class SettingsScreen:
     def __init__(self, window):
         self.root = window
 
-        self.frame = ttk.Frame(self.root, style='Blue.TFrame')
+        self.frame = ttk.Frame(self.root)
         self.title = ttk.Label(self.frame, text='Settings')
 
-        self.separator = ttk.Separator(self.frame, orient=VERTICAL)
+        self.settings_frame = ttk.Frame(self.frame, style='Blue.TFrame')
 
-        self.buttonsConfig = [
+        self.name = StringVar(self.settings_frame, "Player")
+        self.name_entry = ttk.Entry(
+            self.settings_frame,
+            justify='center',
+            textvariable=self.name
+        )
+
+        self.resolution = StringVar(self.frame, "1280x720")
+        self.resolution_options = ["640x360", "960x540", "1280x720", "1600x900", "1920x1080", "2560x1440"]
+        self.resolution_menu = ttk.OptionMenu(
+            self.settings_frame,
+            self.resolution,
+            self.resolution.get(),
+            *self.resolution_options,
+            command=lambda res: self.root.geometry(res)
+        )
+
+        self.fullscreen = BooleanVar(self.settings_frame, False)
+        self.fullscreen_button = ttk.Checkbutton(
+            self.settings_frame,
+            variable=self.fullscreen,
+            command=lambda: self.root.attributes('-fullscreen', self.fullscreen.get())
+        )
+
+        self.language = StringVar(self.settings_frame, "English")
+        self.language_options = ["English", "Русский"]
+        self.language_menu = ttk.OptionMenu(
+            self.settings_frame,
+            self.language,
+            self.language.get(),
+            *self.language_options,
+            command=lambda lang: print('lang change')
+        )
+
+        self.labelsConfig = [
             {
-                "text": "Option 1",
-                "command": lambda: print('hi'),
+                "text": "Name"
             },
             {
-                "text": "Option 2",
-                "command": lambda: print('hey'),
-            }
+                "text": "Resolution"
+            },
+            {
+                "text": "Fullscreen"
+            },
+            {
+                "text": "Language"
+            },
         ]
 
-        self.buttons = []
+        self.labels = []
 
-        for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, **buttonConfig))
+        for labelConfig in self.labelsConfig:
+            self.labels.append(ttk.Label(self.settings_frame, **labelConfig))
 
         self.root.bind('<Escape>', lambda e: self.root.event_generate('<<Main>>'))
 
@@ -81,11 +119,19 @@ class SettingsScreen:
         self.frame.rowconfigure((0, 1, 2, 3), weight=1)
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
 
-        self.title.grid(column=1, row=0, columnspan=2)
-        self.separator.grid(column=3, row=1, rowspan=2, sticky='ns')
+        self.title.grid(column=1, row=0, columnspan=4)
 
-        for i in range(len(self.buttons)):
-            self.buttons[i].grid(column=1, row=(i + 1), columnspan=2, sticky='nsew')
+        self.settings_frame.grid(column=1, row=1, columnspan=4, rowspan=2, sticky='nsew')
+        self.settings_frame.rowconfigure((0, 1, 2, 3), weight=1)
+        self.settings_frame.columnconfigure((0, 1, 2, 3), weight=1)
+
+        self.name_entry.grid(column=3, row=0)
+        self.resolution_menu.grid(column=3, row=1)
+        self.fullscreen_button.grid(column=3, row=2)
+        self.language_menu.grid(column=3, row=3)
+
+        for i in range(len(self.labels)):
+            self.labels[i].grid(column=0, row=i)
 
     def destroy(self):
         self.frame.destroy()
