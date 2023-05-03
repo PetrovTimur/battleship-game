@@ -1,5 +1,5 @@
 from tkinter import Tk, ttk
-from menu import StartScreen, SettingsScreen
+from .menu import StartScreen, SettingsScreen
 
 
 class App(Tk):

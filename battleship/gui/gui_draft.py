@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-import game
-import ai
+from battleship.logic import game, ai
 
 FIELD_SIZE = 10
 
