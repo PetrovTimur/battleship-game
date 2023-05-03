@@ -29,8 +29,6 @@ class StartScreen:
         for buttonConfig in self.buttonsConfig:
             self.buttons.append(ttk.Button(self.frame, **buttonConfig))
 
-        self.root.unbind('<Escape>')
-
         self.place()
 
     def place(self):
@@ -56,15 +54,15 @@ class SettingsScreen:
 
         self.settings_frame = ttk.Frame(self.frame, style='Blue.TFrame')
 
-        self.name = StringVar(self.settings_frame, "Player")
+        self.name = StringVar(self.settings_frame, self.root.appOpts['name'])
         self.name_entry = ttk.Entry(
             self.settings_frame,
             justify='center',
             textvariable=self.name
         )
 
-        self.resolution = StringVar(self.frame, "1280x720")
-        self.resolution_options = ["640x360", "960x540", "1280x720", "1600x900", "1920x1080", "2560x1440"]
+        self.resolution = StringVar(self.frame, self.root.appOpts['resolution'])
+        self.resolution_options = ['640x360', '960x540', '1280x720', '1600x900', '1920x1080', '2560x1440']
         self.resolution_menu = ttk.OptionMenu(
             self.settings_frame,
             self.resolution,
@@ -73,15 +71,15 @@ class SettingsScreen:
             command=lambda res: self.root.geometry(res)
         )
 
-        self.fullscreen = BooleanVar(self.settings_frame, False)
+        self.fullscreen = BooleanVar(self.settings_frame, self.root.appOpts.getboolean('fullscreen'))
         self.fullscreen_button = ttk.Checkbutton(
             self.settings_frame,
             variable=self.fullscreen,
             command=lambda: self.root.attributes('-fullscreen', self.fullscreen.get())
         )
 
-        self.language = StringVar(self.settings_frame, "English")
-        self.language_options = ["English", "Русский"]
+        self.language = StringVar(self.settings_frame, self.root.appOpts['language'])
+        self.language_options = ['English', 'Русский']
         self.language_menu = ttk.OptionMenu(
             self.settings_frame,
             self.language,
@@ -110,9 +108,20 @@ class SettingsScreen:
         for labelConfig in self.labelsConfig:
             self.labels.append(ttk.Label(self.settings_frame, **labelConfig))
 
-        self.root.bind('<Escape>', lambda e: self.root.event_generate('<<Main>>'))
+        self.root.bind('<Escape>', lambda e: self.return_to_main())
 
         self.place()
+
+    def return_to_main(self):
+        self.root.unbind('<Escape>')
+
+        self.root.appOpts = {'name': self.name.get(),
+                             'resolution': self.resolution.get(),
+                             'fullscreen': 'yes' if self.fullscreen.get() else 'no',
+                             'language': self.language.get()}
+
+        self.root.event_generate('<<SaveSettings>>')
+        self.root.event_generate('<<Main>>')
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')
