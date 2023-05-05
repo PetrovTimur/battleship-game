@@ -1,6 +1,6 @@
 from tkinter import Tk
 from .menu import StartScreen, SettingsScreen, NewGameSetupScreen
-from .gui_draft import ShipPlacementScreen
+from .game import ShipPlacementScreen
 from battleship.util import Config
 from .styles import Style
 

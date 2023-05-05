@@ -98,7 +98,10 @@ class ShipPlacementScreen:
                 self.field_buttons[i].append(ttk.Button(self.field_frame, style='Blue.TButton'))
                 self.field_buttons[i][j].bind('<Enter>', lambda e, col=i, row=j: self.hover((col, row)))
                 self.field_buttons[i][j].bind('<Leave>', lambda e, col=i, row=j: self.leave((col, row)))
-                self.field_buttons[i][j].bind('<MouseWheel>', lambda e, col=i, row=j: self.rotate((col, row)))
+
+                self.field_buttons[i][j].bind('<MouseWheel>', lambda e, col=i, row=j: self.rotate(e, (col, row)))
+                self.field_buttons[i][j].bind('<Button-4>', lambda e, col=i, row=j: self.rotate(e, (col, row)))
+                self.field_buttons[i][j].bind('<Button-5>', lambda e, col=i, row=j: self.rotate(e, (col, row)))
 
                 self.field_buttons[i][j].configure(command=lambda col=i, row=j: self.place_ship((col, row)))
 
@@ -155,11 +158,17 @@ class ShipPlacementScreen:
             for col, row in coords:
                 self.field_buttons[col][row].state(['!hover'])
 
-    def rotate(self, pos):
+    def rotate(self, event, pos):
         angles = ['w', 'n', 'e', 's']
 
+        sign = 0
+        if event.num == 5 or event.delta == -120:
+            sign = -1
+        if event.num == 4 or event.delta == 120:
+            sign = 1
+
         self.leave(pos)
-        self.angle = angles[(angles.index(self.angle) + 1) % 4]
+        self.angle = angles[(angles.index(self.angle) + sign) % 4]
         self.hover(pos)
 
     def place_ship(self, pos):
