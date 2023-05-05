@@ -1,7 +1,8 @@
-from tkinter import Tk, ttk
+from tkinter import Tk
 from .menu import StartScreen, SettingsScreen, NewGameSetupScreen
 from .gui_draft import ShipPlacementScreen
 from battleship.util import Config
+from .styles import Style
 
 
 class App(Tk):
@@ -19,10 +20,7 @@ class App(Tk):
         self.geometry(self.appOpts['resolution'])
         self.attributes('-fullscreen', self.appOpts.getboolean('fullscreen'))
 
-        ttk.Style().theme_use('default')
-        ttk.Style().configure('Blue.TFrame', background='#406D96')
-        ttk.Style().configure('Blue.TButton', width=3)
-        ttk.Style().configure('Red.TLabel', background='red')
+        Style()
 
         self.bind('<<Main>>', lambda e: self.change_screen('Main'))
         self.bind('<<Settings>>', lambda e: self.change_screen('Settings'))
