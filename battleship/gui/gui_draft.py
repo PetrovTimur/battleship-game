@@ -1,85 +1,11 @@
 from tkinter import *
 from tkinter import ttk
 from battleship.logic import game, ai
+from battleship.logic.ai import get_coords
 
 FIELD_SIZE = 10
 
 if __name__ == '__main__':
-    def rotate(angle=1):
-        if current_button == None:
-            print('No button')
-        else:
-            leave(current_button)
-            testGame.rotate(angle)
-            hover(current_button)
-
-    def get_rotated_cords(pos, size, rot):
-            # rot = 0-up, 1-left, 2-down, 3-right
-            pos_num = ([1,0,1,0])[rot]
-            sign = ([1,1,-1,-1])[rot]
-
-            coords = []
-
-            for i in range(size):
-                coords.append((pos[0], pos[1]))
-
-                pos[pos_num] += sign
-                if ((pos[0] >= FIELD_SIZE) or (pos[1] >= FIELD_SIZE)
-                    or (pos[0] < 0) or (pos[1] < 0)):
-                    break
-
-            return coords
-
-    def hover(button):
-        global current_button
-        current_button = button
-        if button.instate(['!disabled']):
-            size = testGame.me.field.ships[testGame.me.field.placed].size
-            position = button.grid_info()['column'], button.grid_info()['row']
-
-            coords = []
-            coords = get_rotated_cords(list(position), size, testGame.rotation_number)
-            for i in coords:
-                buttons1[i[0]][i[1]].state(['hover'])
-
-    def leave(button):
-        if button.instate(['!disabled']):
-            size = testGame.me.field.ships[testGame.me.field.placed].size
-            position = button.grid_info()['column'], button.grid_info()['row']
-
-            coords = []
-            coords = get_rotated_cords(list(position), size, testGame.rotation_number)
-            for i in coords:
-                buttons1[i[0]][i[1]].state(['!hover'])
-
-    def place(button):
-        if button.instate(['!disabled']):
-            size = testGame.me.field.ships[testGame.me.field.placed].size
-            position = button.grid_info()['column'], button.grid_info()['row']
-
-            coords = []
-            coords = get_rotated_cords(list(position), size, testGame.rotation_number)
-            if (len(coords) < size):
-                return
-
-            for i in coords:
-                buttons1[i[0]][i[1]].state(['disabled', 'pressed'])
-                buttons1[i[0]][i[1]]['style'] = 'Ship.TButton'
-
-            testGame.me.field.place(coords)
-            testGame.me.field.placed += 1
-
-            if testGame.me.field.check_placed():
-                update_field()
-
-    # TODO check whether ship fits
-
-    def update_field():
-        for i in range(FIELD_SIZE):
-            for j in range(FIELD_SIZE):
-                buttons1[i][j].state(['disabled'])
-                buttons2[i][j].state(['!disabled'])
-
     def step(button):
         position = button.grid_info()['column'], button.grid_info()['row']
         hit = testGame.player_turn((position[0], position[1]))
@@ -104,17 +30,6 @@ if __name__ == '__main__':
 
     root.minsize(1280, 720)
 
-    s = ttk.Style()
-    s.theme_use('default')
-    s.configure('Blue.TFrame', background='#406D96')
-    s.configure('Blue.TButton', width=3, background='#355C7D')
-    s.configure('Ship.TButton', width=3)
-    s.configure('Hit.TButton', width=3)
-    s.configure('Miss.TButton', width=3)
-    s.map('Blue.TButton', background=[('!pressed', 'disabled', '#26364a'), ('hover', 'pink')])
-    s.map('Ship.TButton', background=[('disabled', 'grey')])
-    s.map('Hit.TButton', background=[('disabled', 'orange')])
-    s.map('Miss.TButton', background=[('disabled', 'black')])
 
     mainframe = ttk.Frame(root, style='Blue.TFrame')
     mainframe.grid(column=0, row=0, sticky='nsew')
@@ -171,15 +86,27 @@ class ShipPlacementScreen:
 
         self.frame = ttk.Frame(self.root)
         self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
-
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', command=lambda: print('random'))
+        self.start_button = ttk.Button(self.frame, text='Ready',
+                                       command=lambda: self.root.event_generate('<<GameScreen>>'))
+        self.field_buttons: list[list[ttk.Button]] = []
 
-        self.buttons = [[ttk.Button(self.field_frame, style='Blue.TButton')
-                         for i in range(FIELD_SIZE)]
-                        for j in range(FIELD_SIZE)]
+        for i in range(FIELD_SIZE):
+            self.field_buttons.append([])
+            for j in range(FIELD_SIZE):
+                self.field_buttons[i].append(ttk.Button(self.field_frame, style='Blue.TButton'))
+                self.field_buttons[i][j].bind('<Enter>', lambda e, col=i, row=j: self.hover((col, row)))
+                self.field_buttons[i][j].bind('<Leave>', lambda e, col=i, row=j: self.leave((col, row)))
+                self.field_buttons[i][j].bind('<MouseWheel>', lambda e, col=i, row=j: self.rotate((col, row)))
+
+                self.field_buttons[i][j].configure(command=lambda col=i, row=j: self.place_ship((col, row)))
 
         self.root.bind('<Escape>', lambda e: self.return_to_main())
+
+        self.angle = 's'
+        self.game = game.Game(mode=1)
+        # TODO move game initialization to NewGameSetupScreen
 
         self.place()
 
@@ -195,16 +122,66 @@ class ShipPlacementScreen:
 
         self.title.grid(column=5, row=0, columnspan=6, rowspan=2)
         self.field_frame.grid(column=5, row=2, columnspan=6, rowspan=6, sticky='nsew')
-        self.random_button.grid(column=13, row=7, columnspan=2,)
+        self.random_button.grid(column=12, row=5, columnspan=3)
+        self.start_button.grid(column=12, row=7, columnspan=3)
 
         self.field_frame.grid_propagate(False)
 
-        for i in range(len(self.buttons)):
-            for j in range(len(self.buttons[0])):
-                self.buttons[i][j].grid(column=j, row=i, sticky='nsew')
+        for i in range(len(self.field_buttons)):
+            for j in range(len(self.field_buttons[0])):
+                self.field_buttons[i][j].grid(column=i, row=FIELD_SIZE - j - 1, sticky='nsew')
 
         self.field_frame.rowconfigure('all', weight=1)
         self.field_frame.columnconfigure('all', weight=1)
+
+    def hover(self, pos):
+        col, row = pos
+        current_button = self.field_buttons[col][row]
+        current_button.state(['!hover'])
+        if current_button.instate(['!disabled']):
+            size = self.game.me.field.ships[self.game.me.field.placed].size
+
+            coords = get_coords(pos, size, self.angle)
+            for col, row in coords:
+                self.field_buttons[col][row].state(['hover'])
+
+    def leave(self, pos):
+        col, row = pos
+        current_button = self.field_buttons[col][row]
+        if current_button.instate(['!disabled']):
+            size = self.game.me.field.ships[self.game.me.field.placed].size
+
+            coords = get_coords(pos, size, self.angle)
+            for col, row in coords:
+                self.field_buttons[col][row].state(['!hover'])
+
+    def rotate(self, pos):
+        angles = ['w', 'n', 'e', 's']
+
+        self.leave(pos)
+        self.angle = angles[(angles.index(self.angle) + 1) % 4]
+        self.hover(pos)
+
+    def place_ship(self, pos):
+        size = self.game.me.field.ships[self.game.me.field.placed].size
+
+        coords = get_coords(pos, size, self.angle)
+        if len(coords) < size:
+            return
+
+        for col, row in coords:
+            self.field_buttons[col][row].state(['disabled', 'pressed'])
+            self.field_buttons[col][row]['style'] = 'Ship.TButton'
+
+        self.game.me.field.place(coords)
+
+        if self.game.me.field.check_placed():
+            self.update_field()
+
+    def update_field(self):
+        for i in range(FIELD_SIZE):
+            for j in range(FIELD_SIZE):
+                self.field_buttons[i][j].state(['disabled'])
 
     def destroy(self):
         self.frame.destroy()
