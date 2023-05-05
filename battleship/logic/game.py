@@ -53,6 +53,8 @@ class Field:
 
         self.ships[self.placed].place(coords)
 
+        self.placed += 1
+
 
 class Player:
     def __init__(self, name):
@@ -73,7 +75,6 @@ class Player:
 class Game:
     def __init__(self, mode):
         self.mode = mode
-        self.rotation_number = 0
         self.me = Player('name')
         self.enemy = Player('bot')
 
@@ -82,6 +83,3 @@ class Game:
 
     def enemy_turn(self, cell):
         return self.me.update_field(cell)
-
-    def rotate(self, angle=1):
-        self.rotation_number = (self.rotation_number + angle) % 4
