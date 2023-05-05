@@ -1,5 +1,6 @@
 from tkinter import StringVar, BooleanVar
 from tkinter import ttk
+from battleship.logic.game import Game
 
 
 class StartScreen:
@@ -160,7 +161,7 @@ class NewGameSetupScreen:
         self.buttonsConfig = [
             {
                 "text": "Single",
-                "command": lambda: self.root.event_generate('<<ShipPlacement>>'),
+                "command": lambda: self.start_game(),
             },
             {
                 "text": "Online",
@@ -180,6 +181,13 @@ class NewGameSetupScreen:
     def return_to_main(self):
         self.root.unbind('<Escape>')
         self.root.event_generate('<<Main>>')
+
+    def start_game(self, *args):
+        self.root.game = Game(mode=1)
+
+        self.root.event_generate('<<ShipPlacement>>')
+
+    # TODO add more game settings
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')
