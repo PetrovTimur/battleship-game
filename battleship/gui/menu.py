@@ -149,7 +149,7 @@ class SettingsScreen:
         self.frame.destroy()
 
 
-class NewGameScreen:
+class NewGameSetupScreen:
     def __init__(self, window):
         self.root = window
 
@@ -160,7 +160,7 @@ class NewGameScreen:
         self.buttonsConfig = [
             {
                 "text": "Single",
-                "command": lambda: print('single'),
+                "command": lambda: self.root.event_generate('<<ShipPlacement>>'),
             },
             {
                 "text": "Online",
