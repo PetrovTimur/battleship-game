@@ -7,12 +7,12 @@ class StartScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root)
-        self.title = ttk.Label(self.frame, text='Welcome, player!')
+        self.title = ttk.Label(self.frame, text=f"Welcome, {self.root.appOpts['name']}!")
 
         self.buttonsConfig = [
             {
                 "text": "New Game",
-                "command": lambda: print('hi'),
+                "command": lambda: self.root.event_generate('<<NewGame>>'),
             },
             {
                 "text": "Settings",
@@ -115,10 +115,13 @@ class SettingsScreen:
     def return_to_main(self):
         self.root.unbind('<Escape>')
 
-        self.root.appOpts = {'name': self.name.get(),
-                             'resolution': self.resolution.get(),
-                             'fullscreen': 'yes' if self.fullscreen.get() else 'no',
-                             'language': self.language.get()}
+        settings = {'name': self.name.get(),
+                    'resolution': self.resolution.get(),
+                    'fullscreen': 'yes' if self.fullscreen.get() else 'no',
+                    'language': self.language.get()}
+
+        for key, value in settings.items():
+            self.root.appOpts[key] = value
 
         self.root.event_generate('<<SaveSettings>>')
         self.root.event_generate('<<Main>>')
@@ -141,6 +144,52 @@ class SettingsScreen:
 
         for i in range(len(self.labels)):
             self.labels[i].grid(column=0, row=i)
+
+    def destroy(self):
+        self.frame.destroy()
+
+
+class NewGameScreen:
+    def __init__(self, window):
+        self.root = window
+
+        self.frame = ttk.Frame(self.root)
+
+        self.title = ttk.Label(self.frame, text='New Game')
+
+        self.buttonsConfig = [
+            {
+                "text": "Single",
+                "command": lambda: print('single'),
+            },
+            {
+                "text": "Online",
+                "command": lambda: print('online'),
+            },
+        ]
+
+        self.buttons = []
+
+        for buttonConfig in self.buttonsConfig:
+            self.buttons.append(ttk.Button(self.frame, **buttonConfig))
+
+        self.root.bind('<Escape>', lambda e: self.return_to_main())
+
+        self.place()
+
+    def return_to_main(self):
+        self.root.unbind('<Escape>')
+        self.root.event_generate('<<Main>>')
+
+    def place(self):
+        self.frame.grid(column=0, row=0, sticky='nsew')
+        self.frame.rowconfigure((0, 1, 2, 3, 4), weight=1)
+        self.frame.columnconfigure((0, 1, 2, 3), weight=1)
+
+        self.title.grid(column=1, row=1, columnspan=2)
+
+        for i in range(len(self.buttons)):
+            self.buttons[i].grid(column=(i + 1), row=2, sticky='nsew')
 
     def destroy(self):
         self.frame.destroy()

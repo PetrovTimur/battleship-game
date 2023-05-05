@@ -1,5 +1,5 @@
 from tkinter import Tk, ttk
-from .menu import StartScreen, SettingsScreen
+from .menu import StartScreen, SettingsScreen, NewGameScreen
 from battleship.util import Config
 
 
@@ -24,6 +24,7 @@ class App(Tk):
         self.bind('<<Main>>', lambda e: self.change_screen('Main'))
         self.bind('<<Settings>>', lambda e: self.change_screen('Settings'))
         self.bind('<<SaveSettings>>', lambda e: Config.save(self.appOpts))
+        self.bind('<<NewGame>>', lambda e: self.change_screen('NewGame'))
 
         self.screen = None
         self.session = None
@@ -40,3 +41,5 @@ class App(Tk):
             self.session = StartScreen(self)
         elif self.screen == 'Settings':
             self.session = SettingsScreen(self)
+        elif self.screen == 'NewGame':
+            self.session = NewGameScreen(self)
