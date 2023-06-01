@@ -68,10 +68,7 @@ def get_coords(position, size, angle):
 Неверный ввод
 >>> get_coords([5], 4, 'w')
 Traceback (most recent call last):
-  File "/media/neil/Файлы/F/вмк/6 семестр/battleship-game/battleship/logic/test.py", line 3, in <module>
-    print(get_coords([1],2,'w'))
-  File "/media/neil/Файлы/F/вмк/6 семестр/battleship-game/battleship/logic/ai.py", line 90, in get_coords
-    if 0 <= position[0] + (size - 1) * offset[0] < 10 and 0 <= position[1] + (size - 1) * offset[1] < 10:
+...
 IndexError: list index out of range
 
 >>> get_coords([5,5,5], 5, 's')
@@ -88,42 +85,22 @@ IndexError: list index out of range
 
 >>> get_coords([5,5], 3, 'з')
 Traceback (most recent call last):
-    File "/usr/lib/python3.10/doctest.py", line 1350, in __run
-    exec(compile(example.source, filename, "single",
-    File "<doctest __main__.get_coords[21]>", line 1, in <module>
-    get_coords([5,5], 3, 'з')
-    File "/media/neil/Файлы/F/вмк/6 семестр/battleship-game/battleship/logic/ai.py", line 105, in get_coords
-    offset = angles[angle]
+...
 KeyError: 'з'
 
 >>> get_coords('b', 3, 'e')
 Traceback (most recent call last):
-    File "/usr/lib/python3.10/doctest.py", line 1350, in __run
-    exec(compile(example.source, filename, "single",
-    File "<doctest __main__.get_coords[22]>", line 1, in <module>
-    get_coords('b', 3, 'e')
-    File "/media/neil/Файлы/F/вмк/6 семестр/battleship-game/battleship/logic/ai.py", line 111, in get_coords
-    if (0 <= position[0] < 10 and 0 <= position[1] < 10
+...
 TypeError: '<=' not supported between instances of 'int' and 'str'
 
 >>> get_coords([5,5], 'b', 'e')
 Traceback (most recent call last):
-    File "/usr/lib/python3.10/doctest.py", line 1350, in __run
-    exec(compile(example.source, filename, "single",
-    File "<doctest __main__.get_coords[23]>", line 1, in <module>
-    get_coords([5,5], 'b', 'e')
-    File "/media/neil/Файлы/F/вмк/6 семестр/battleship-game/battleship/logic/ai.py", line 121, in get_coords
-    and size > 0
+...
 TypeError: '>' not supported between instances of 'str' and 'int'
 
 >>> get_coords([5,5], 3, 3)
 Traceback (most recent call last):
-    File "/usr/lib/python3.10/doctest.py", line 1350, in __run
-    exec(compile(example.source, filename, "single",
-    File "<doctest __main__.get_coords[24]>", line 1, in <module>
-    get_coords([5,5], 3, 3)
-    File "/media/neil/Файлы/F/вмк/6 семестр/battleship-game/battleship/logic/ai.py", line 127, in get_coords
-    offset = angles[angle]
+...
 KeyError: 3
 
     '''
