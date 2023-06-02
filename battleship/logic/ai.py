@@ -70,8 +70,7 @@ def random_ships_matrix():
     return cells
 
 
-def random_ships():
-    cells = random_ships_matrix()
+def random_ships(cells):
     ships_coords = {}
     for i in range(10):
         coords = []
