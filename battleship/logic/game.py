@@ -27,16 +27,32 @@ class Field:
                       Ship(2), Ship(2), Ship(2),
                       Ship(1), Ship(1), Ship(1), Ship(1)]
         self.placed = 0
+        self.sank = []
 
-    def update(self, coord):
+    def check(self, coord):
         hit = self.cells[coord[0]][coord[1]] > 0
+        status = ''
         if hit:
             self.ships[self.cells[coord[0]][coord[1]] - 1].hit(coord)
+            if self.ships[self.cells[coord[0]][coord[1]] - 1].afloat:
+                status = 'hit'
+            else:
+                status = 'sank'
+                self.sank.append(self.ships[self.cells[coord[0]][coord[1]] - 1])
+            self.cells[coord[0]][coord[1]] = -1
+        else:
+            self.cells[coord[0]][coord[1]] = -2
+            status = 'miss'
+
+        return status
+
+    def update(self, coord, status):
+        if status == 'hit' or status == 'sank':
             self.cells[coord[0]][coord[1]] = -1
         else:
             self.cells[coord[0]][coord[1]] = -2
 
-        return hit
+        return status == 'hit' or status == 'sank'
 
     def auto_place(self, func):
         self.cells = func()
@@ -66,10 +82,15 @@ class Player:
         self.alive = any(ship.afloat for ship in self.field.ships)
 
     def update_field(self, coord):
-        hit = self.field.update(coord)
+        hit = self.field.check(coord)
+
         self.update_status()
 
-        return hit
+        if self.alive:
+            return hit
+        else:
+            return 'dead'
+        # return hit
 
 
 class Game:
@@ -77,6 +98,9 @@ class Game:
         self.mode = mode
         self.me = Player('name')
         self.enemy = Player('bot')
+        self.queue = None
+        self.net = None
+        self.turn = None
 
     def player_turn(self, cell):
         return self.enemy.update_field(cell)

@@ -161,11 +161,11 @@ class NewGameSetupScreen:
         self.buttonsConfig = [
             {
                 "text": "Single",
-                "command": lambda: self.start_game(),
+                "command": lambda: self.start_game('single'),
             },
             {
                 "text": "Online",
-                "command": lambda: print('online'),
+                "command": lambda: self.start_game('online'),
             },
         ]
 
@@ -182,8 +182,8 @@ class NewGameSetupScreen:
         self.root.unbind('<Escape>')
         self.root.event_generate('<<Main>>')
 
-    def start_game(self, *args):
-        self.root.game = Game(mode=1)
+    def start_game(self, mode):
+        self.root.game = Game(mode=mode)
 
         self.root.event_generate('<<ShipPlacement>>')
 
