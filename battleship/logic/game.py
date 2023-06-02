@@ -1,3 +1,5 @@
+from .ai import random_ships, random_ships_matrix
+
 FIELD_SIZE = 10
 TOTAL_SHIPS = 10
 
@@ -54,8 +56,12 @@ class Field:
 
         return status == 'hit' or status == 'sank'
 
-    def auto_place(self, func):
-        self.cells = func()
+    def auto_place(self):
+        self.placed = 0
+        self.cells = random_ships_matrix()
+        ships = random_ships(self.cells)
+        for i in range(10):
+            self.place(ships[i + 1])
 
     def check_placed(self):
         for ship in self.ships:

@@ -28,7 +28,6 @@ def get_coords(position, size, angle):
     return coords
 
 
-
 if __name__ == "__main__":
     import doctest
     doctest.testfile("ai_tests.txt")
