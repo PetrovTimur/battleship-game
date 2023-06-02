@@ -1,6 +1,7 @@
 from tkinter import ttk
-from battleship.logic import ai
+from battleship.logic import ai, network
 from battleship.logic.ai import get_coords
+import queue
 
 FIELD_SIZE = 10
 
@@ -14,7 +15,8 @@ class ShipPlacementScreen:
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', command=lambda: print('random'))
         self.start_button = ttk.Button(self.frame, text='Ready',
-                                       command=lambda: self.root.event_generate('<<Game>>'))
+                                       # command=lambda: self.root.event_generate('<<Game>>'))
+                                       command=lambda: self.ready())
         self.field_buttons: list[list[ttk.Button]] = []
 
         for i in range(FIELD_SIZE):
@@ -35,6 +37,18 @@ class ShipPlacementScreen:
         self.angle = 's'
 
         self.place()
+
+    def ready(self):
+        if self.root.game.mode == 'single':
+            self.start_game()
+        else:
+            self.root.game.queue = queue.Queue()
+            self.root.game.net = network.AsyncioThread(self.root.game, self)
+            self.root.game.net.daemon = True
+            self.root.game.net.start()
+
+    def start_game(self):
+        self.root.event_generate('<<Game>>')
 
     def return_to_main(self):
         self.root.unbind('<Escape>')
@@ -133,6 +147,8 @@ class GameScreen:
         self.player_buttons: list[list[ttk.Button]] = []
         self.enemy_buttons: list[list[ttk.Button]] = []
 
+        self.queue = self.root.game.queue
+
         for i in range(FIELD_SIZE):
             self.player_buttons.append([])
             self.enemy_buttons.append([])
@@ -144,25 +160,61 @@ class GameScreen:
                     if self.root.game.me.field.cells[i][j] > 0 else 'Blue.TButton'
                 self.player_buttons[i][j].state(['disabled'])
 
-                self.enemy_buttons[i][j].configure(command=lambda col=i, row=j: self.step((col, row)))
+                self.enemy_buttons[i][j].configure(command=lambda col=i, row=j: self.player_turn((col, row)))
 
         self.place()
 
-    def step(self, pos):
+        self.root.game.net.update_screen(self)
+        self.order()
+
+    def order(self):
+        if self.root.game.turn == 'second':
+            for i in range(FIELD_SIZE):
+                for j in range(FIELD_SIZE):
+                    self.enemy_buttons[i][j].state(['disabled'])
+
+    def enemy_turn(self, pos):
         col, row = pos
-        hit = self.root.game.player_turn((col, row))
-        if hit:
+        status = self.root.game.enemy_turn((col, row))
+
+        if status == 'hit':
+            self.player_buttons[col][row]['style'] = 'Hit.TButton'
+        elif status == 'sank' or status == 'dead':
+            for coord in self.root.game.me.field.sank[-1].status.keys():
+                self.player_buttons[coord[0]][coord[1]]['style'] = 'Sank.TButton'
+        else:
+            self.player_buttons[col][row]['style'] = 'Miss.TButton'
+            for i in range(FIELD_SIZE):
+                for j in range(FIELD_SIZE):
+                    if self.enemy_buttons[i][j]['style'] == 'Blue.TButton':
+                        self.enemy_buttons[i][j].state(['!disabled'])
+
+        return status
+
+    def player_turn(self, pos):
+        col, row = pos
+        status = self.root.game.player_turn((col, row))
+        self.queue.put((pos, status))
+
+        if status == 'hit':
             self.enemy_buttons[col][row]['style'] = 'Hit.TButton'
+        elif status == 'sank' or status == 'dead':
+            self.enemy_buttons[col][row]['style'] = 'Sank.TButton'
+            for coord in self.root.game.enemy.field.sank[-1].status.keys():
+                self.enemy_buttons[coord[0]][coord[1]]['style'] = 'Sank.TButton'
+
+            if status == 'dead':
+                for i in range(FIELD_SIZE):
+                    for j in range(FIELD_SIZE):
+                        if self.enemy_buttons[i][j]['style'] == 'Blue.TButton':
+                            self.enemy_buttons[i][j].state(['disabled'])
         else:
             self.enemy_buttons[col][row]['style'] = 'Miss.TButton'
+            for i in range(FIELD_SIZE):
+                for j in range(FIELD_SIZE):
+                    if self.enemy_buttons[i][j]['style'] == 'Blue.TButton':
+                        self.enemy_buttons[i][j].state(['disabled'])
         self.enemy_buttons[col][row].state(['disabled'])
-
-        new_col, new_row = ai.shot(self.root.game.me.field.cells)
-        hit = self.root.game.enemy_turn((new_col, new_row))
-        if hit:
-            self.player_buttons[new_col][new_row]['style'] = 'Hit.TButton'
-        else:
-            self.player_buttons[new_col][new_row]['style'] = 'Miss.TButton'
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')

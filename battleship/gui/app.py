@@ -20,7 +20,7 @@ class App(Tk):
         self.geometry(self.appOpts['resolution'])
         self.attributes('-fullscreen', self.appOpts.getboolean('fullscreen'))
 
-        Style()
+        self.style = Style()
 
         self.bind('<<Main>>', lambda e: self.change_screen('Main'))
         self.bind('<<Settings>>', lambda e: self.change_screen('Settings'))
