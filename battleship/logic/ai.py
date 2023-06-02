@@ -27,6 +27,61 @@ def get_coords(position, size, angle):
 
     return coords
 
+def random_ships_matrix():
+    sizes = [4,3,3,2,2,2,1,1,1,1]
+    number = 1
+    cells = [[None]*10 for _ in range(10)]
+    angles = {  0: 'w',
+                1: 'n',
+                2: 'e',
+                3: 's'}
+    coords = []
+    for size in sizes:
+        f = True
+        while f:
+            pos = (randint (0, 9), randint (0, 9))
+            angle = angles[randint(0,3)]
+            coords = get_coords(pos, size, angle)
+            while len(coords) != size:
+                pos = (randint (0, 9), randint (0, 9))
+                angle = angles[randint(0,3)]
+                coords = get_coords(pos, size, angle)
+            f = False
+            for i in coords:
+                if cells[i[0]][i[1]] != None:
+                    f = True
+                    break
+        for coord in coords:
+            cells[coord[0]][coord[1]] = number
+        for coord in coords:
+            if coord[0]<9 and cells[coord[0]+1][coord[1]] == None:
+                cells[coord[0]+1][coord[1]] = 0
+            if coord[1]<9 and cells[coord[0]][coord[1]+1] == None:
+                cells[coord[0]][coord[1]+1] = 0
+            if coord[0]>0 and cells[coord[0]-1][coord[1]] == None:
+                cells[coord[0]-1][coord[1]] = 0
+            if coord[1]>0 and cells[coord[0]][coord[1]-1] == None:
+                cells[coord[0]][coord[1]-1] = 0
+        number += 1
+    for i in range(len(cells)):
+        for i2 in range(len(cells[i])):
+            if cells[i][i2] == None:
+                cells[i][i2] = 0
+    return cells
+
+
+def random_ships():
+    cells = random_ships_matrix()
+    ships_coords = {}
+    for i in range(10):
+        coords = []
+        for x in range(len(cells)):
+            for y in range(len(cells)):
+                if cells [x][y] == i+1:
+                    coords.append((x,y))
+        ships_coords[i+1] = coords
+    return ships_coords
+
 
 if __name__ == "__main__":
     import doctest
