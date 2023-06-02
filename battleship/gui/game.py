@@ -13,7 +13,7 @@ class ShipPlacementScreen:
         self.frame = ttk.Frame(self.root)
         self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
         self.field_frame = ttk.Frame(self.frame)
-        self.random_button = ttk.Button(self.frame, text='Random', command=lambda: print('random'))
+        self.random_button = ttk.Button(self.frame, text='Random', command=lambda: self.random_place())
         self.start_button = ttk.Button(self.frame, text='Ready',
                                        # command=lambda: self.root.event_generate('<<Game>>'))
                                        command=lambda: self.ready())
@@ -53,6 +53,15 @@ class ShipPlacementScreen:
     def return_to_main(self):
         self.root.unbind('<Escape>')
         self.root.event_generate('<<Main>>')
+
+    def random_place(self):
+        self.root.game.me.field.auto_place()
+
+        for i in range(FIELD_SIZE):
+            for j in range(FIELD_SIZE):
+                self.field_buttons[i][j]['style'] = 'Ship.TButton'\
+                    if self.root.game.me.field.cells[i][j] > 0 else 'Blue.TButton'
+                self.field_buttons[i][j].state(['disabled'])
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')
@@ -147,8 +156,6 @@ class GameScreen:
         self.player_buttons: list[list[ttk.Button]] = []
         self.enemy_buttons: list[list[ttk.Button]] = []
 
-        self.queue = self.root.game.queue
-
         for i in range(FIELD_SIZE):
             self.player_buttons.append([])
             self.enemy_buttons.append([])
@@ -164,8 +171,10 @@ class GameScreen:
 
         self.place()
 
-        self.root.game.net.update_screen(self)
-        self.order()
+        if self.root.game.mode == 'online':
+            self.queue = self.root.game.queue
+            self.root.game.net.update_screen(self)
+            self.order()
 
     def order(self):
         if self.root.game.turn == 'second':
@@ -194,7 +203,8 @@ class GameScreen:
     def player_turn(self, pos):
         col, row = pos
         status = self.root.game.player_turn((col, row))
-        self.queue.put((pos, status))
+        if self.root.game.mode == 'online':
+            self.queue.put((pos, status))
 
         if status == 'hit':
             self.enemy_buttons[col][row]['style'] = 'Hit.TButton'
@@ -214,7 +224,16 @@ class GameScreen:
                 for j in range(FIELD_SIZE):
                     if self.enemy_buttons[i][j]['style'] == 'Blue.TButton':
                         self.enemy_buttons[i][j].state(['disabled'])
+
+            if self.root.game.mode == 'single':
+                pos = ai.shot(self.root.game.me.field.cells)
+                status = self.enemy_turn(pos)
+                while status != 'miss':
+                    pos = ai.shot(self.root.game.me.field.cells)
+                    status = self.enemy_turn(pos)
+
         self.enemy_buttons[col][row].state(['disabled'])
+
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')

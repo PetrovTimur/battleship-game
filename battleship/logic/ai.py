@@ -82,7 +82,6 @@ def random_ships():
         ships_coords[i+1] = coords
     return ships_coords
 
-        
 
 if __name__ == "__main__":
     import doctest

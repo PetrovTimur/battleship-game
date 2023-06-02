@@ -2,8 +2,8 @@ import asyncio
 import threading
 import pickle
 
-SERVER_IP = '40.91.223.121'
-# SERVER_IP = '127.0.0.1'
+# SERVER_IP = '40.91.223.121'
+SERVER_IP = '127.0.0.1'
 
 
 class AsyncioThread(threading.Thread):
