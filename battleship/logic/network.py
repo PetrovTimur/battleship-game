@@ -15,7 +15,7 @@ class AsyncioThread(threading.Thread):
         self.reader = None
         self.writer = None
         self.game = game
-        threading.Thread.__init__(self)
+        super().__init__(daemon=True)
 
     def update_screen(self, screen):
         self.screen = screen
@@ -40,6 +40,7 @@ class AsyncioThread(threading.Thread):
         data = await self.reader.read(100)
 
         pos = pickle.loads(data)
+        self.queue.put(pos)
         status = self.screen.enemy_turn(pos)
 
         if status == 'dead':

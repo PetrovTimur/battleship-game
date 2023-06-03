@@ -1,6 +1,6 @@
 from tkinter import ttk
 from battleship.logic import ai, network
-from battleship.logic.ai import get_coords
+from battleship.logic.ai import get_coords, PlayingThread
 import queue
 
 FIELD_SIZE = 10
@@ -39,13 +39,12 @@ class ShipPlacementScreen:
         self.place()
 
     def ready(self):
+        self.root.game.queue = queue.Queue()
         if self.root.game.mode == 'single':
-            self.start_game()
+            self.root.game.thread = PlayingThread(self.root.game, self)
         else:
-            self.root.game.queue = queue.Queue()
-            self.root.game.net = network.AsyncioThread(self.root.game, self)
-            self.root.game.net.daemon = True
-            self.root.game.net.start()
+            self.root.game.thread = network.AsyncioThread(self.root.game, self)
+        self.root.game.thread.start()
 
     def start_game(self):
         self.root.event_generate('<<Game>>')
@@ -171,10 +170,9 @@ class GameScreen:
 
         self.place()
 
-        if self.root.game.mode == 'online':
-            self.queue = self.root.game.queue
-            self.root.game.net.update_screen(self)
-            self.order()
+        self.queue = self.root.game.queue
+        self.root.game.thread.update_screen(self)
+        self.order()
 
     def order(self):
         if self.root.game.turn == 'second':
@@ -183,6 +181,7 @@ class GameScreen:
                     self.enemy_buttons[i][j].state(['disabled'])
 
     def enemy_turn(self, pos):
+        pos = self.queue.get()
         col, row = pos
         status = self.root.game.enemy_turn((col, row))
 
@@ -203,8 +202,7 @@ class GameScreen:
     def player_turn(self, pos):
         col, row = pos
         status = self.root.game.player_turn((col, row))
-        if self.root.game.mode == 'online':
-            self.queue.put((pos, status))
+        self.queue.put((pos, status))
 
         if status == 'hit':
             self.enemy_buttons[col][row]['style'] = 'Hit.TButton'
@@ -225,15 +223,7 @@ class GameScreen:
                     if self.enemy_buttons[i][j]['style'] == 'Blue.TButton':
                         self.enemy_buttons[i][j].state(['disabled'])
 
-            if self.root.game.mode == 'single':
-                pos = ai.shot(self.root.game.me.field.cells)
-                status = self.enemy_turn(pos)
-                while status != 'miss':
-                    pos = ai.shot(self.root.game.me.field.cells)
-                    status = self.enemy_turn(pos)
-
         self.enemy_buttons[col][row].state(['disabled'])
-
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')

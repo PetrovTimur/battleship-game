@@ -105,7 +105,7 @@ class Game:
         self.me = Player('name')
         self.enemy = Player('bot')
         self.queue = None
-        self.net = None
+        self.thread = None
         self.turn = None
 
     def player_turn(self, cell):
