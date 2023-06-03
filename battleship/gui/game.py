@@ -14,7 +14,7 @@ class ShipPlacementScreen:
         self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', command=lambda: self.random_place())
-        self.start_button = ttk.Button(self.frame, text='Ready', command=lambda: self.ready())
+        self.ready_button = ttk.Button(self.frame, text='Ready', command=lambda: self.ready())
         self.field_buttons: list[list[ttk.Button]] = []
 
         for i in range(FIELD_SIZE):
@@ -37,6 +37,8 @@ class ShipPlacementScreen:
         self.place()
 
     def ready(self):
+        self.ready_button['state'] = ['disabled']
+
         self.root.game.queue = queue.Queue()
         if self.root.game.mode == 'single':
             self.root.game.thread = PlayingThread(self.root.game, self)
@@ -69,7 +71,7 @@ class ShipPlacementScreen:
         self.title.grid(column=5, row=0, columnspan=6, rowspan=2)
         self.field_frame.grid(column=5, row=2, columnspan=6, rowspan=6, sticky='nsew')
         self.random_button.grid(column=12, row=5, columnspan=3)
-        self.start_button.grid(column=12, row=7, columnspan=3)
+        self.ready_button.grid(column=12, row=7, columnspan=3)
 
         self.field_frame.grid_propagate(False)
 
