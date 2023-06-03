@@ -52,15 +52,15 @@ class AsyncioThread(threading.Thread):
         await self.connect()
         data = await self.reader.read(100)
         turn = data.decode()
-        self.game.turn = turn
+        self.queue.put(turn)
 
         me = self.game.me
         self.writer.write(pickle.dumps(me))
         await self.writer.drain()
 
         data = await self.reader.read(1000)
-        opponent = pickle.loads(data)
-        self.game.enemy = opponent
+        enemy = pickle.loads(data)
+        self.queue.put(enemy)
 
         self.screen.start_game()
 

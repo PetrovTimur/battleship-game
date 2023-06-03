@@ -14,9 +14,7 @@ class ShipPlacementScreen:
         self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', command=lambda: self.random_place())
-        self.start_button = ttk.Button(self.frame, text='Ready',
-                                       # command=lambda: self.root.event_generate('<<Game>>'))
-                                       command=lambda: self.ready())
+        self.start_button = ttk.Button(self.frame, text='Ready', command=lambda: self.ready())
         self.field_buttons: list[list[ttk.Button]] = []
 
         for i in range(FIELD_SIZE):
@@ -147,8 +145,8 @@ class GameScreen:
 
         self.frame = ttk.Frame(self.root)
 
-        self.player_label = ttk.Label(self.frame, text='name 1')
-        self.enemy_label = ttk.Label(self.frame, text='name 2')
+        self.player_label = ttk.Label(self.frame, text='')
+        self.enemy_label = ttk.Label(self.frame, text='')
 
         self.player_field = ttk.Frame(self.frame, style='Blue.TFrame')
         self.enemy_field = ttk.Frame(self.frame, style='Blue.TFrame')
@@ -168,11 +166,18 @@ class GameScreen:
 
                 self.enemy_buttons[i][j].configure(command=lambda col=i, row=j: self.player_turn((col, row)))
 
-        self.place()
-
         self.queue = self.root.game.queue
         self.root.game.thread.update_screen(self)
+
+        self.root.game.turn = self.queue.get()
+        if self.root.game.mode == 'online':
+            self.root.game.enemy = self.queue.get()
+
+        self.player_label['text'] = self.root.game.me.name
+        self.enemy_label['text'] = self.root.game.enemy.name
+
         self.order()
+        self.place()
 
     def order(self):
         if self.root.game.turn == 'second':

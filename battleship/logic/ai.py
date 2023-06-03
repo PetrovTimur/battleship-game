@@ -120,7 +120,7 @@ class PlayingThread(threading.Thread):
 
     def play(self):
         turn = choice(['first', 'second'])
-        self.game.turn = turn
+        self.queue.put(turn)
         self.screen.start_game()
 
         if turn == 'first':
