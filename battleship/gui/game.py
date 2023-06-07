@@ -1,6 +1,6 @@
 import threading
-from tkinter import ttk, messagebox
-from battleship.logic import ai, network
+from tkinter import ttk, messagebox, BooleanVar
+from battleship.logic import ai, network, network2
 from battleship.logic.ai import get_coords, PlayingThread
 import queue
 import asyncio
@@ -16,7 +16,10 @@ class ShipPlacementScreen:
         self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', command=lambda: self.random_place())
-        self.ready_check = ttk.Checkbutton(self.frame, text='Ready', state='disabled', command=lambda: self.ready())
+        self.is_ready = BooleanVar(value=False)
+        self.ready_check = ttk.Checkbutton(self.frame, text='Ready',
+                                           state='disabled', command=lambda: self.ready(),
+                                           variable=self.is_ready, onvalue=True, offvalue=False)
         self.field_buttons: list[list[ttk.Button]] = []
 
         for i in range(FIELD_SIZE):
@@ -39,18 +42,29 @@ class ShipPlacementScreen:
         self.place()
 
     def ready(self):
-
-        self.root.game.queue = queue.Queue()
-        if self.root.game.mode == 'single':
-            self.root.game.thread = PlayingThread(self.root.game, self)
+        if self.is_ready.get():
+            self.root.game.queue = queue.Queue()
+            if self.root.game.mode == 'single':
+                self.root.game.thread = PlayingThread(self.root.game, self)
+            else:
+                self.root.game.thread = network.AsyncioThread(self.root.game, self)
+            self.root.game.thread.start()
         else:
-            self.root.game.thread = network.AsyncioThread(self.root.game, self)
-        self.root.game.thread.start()
+            self.root.game.queue = None
+            if self.root.game.mode == 'online':
+                asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
+                                             self.root.game.thread.asyncio_loop)
+            self.root.game.thread = None
 
     def start_game(self):
         self.root.event_generate('<<Game>>')
 
     def return_to_main(self):
+        if self.root.game.mode == 'online' and self.is_ready.get():
+            asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
+                                             self.root.game.thread.asyncio_loop)
+
+        self.root.game = None
         self.root.unbind('<Escape>')
         self.root.event_generate('<<Main>>')
 
@@ -189,6 +203,7 @@ class GameScreen:
         self.place()
 
     def return_to_main(self):
+        self.root.game = None
         self.root.unbind('<Escape>')
         self.root.event_generate('<<Main>>')
 
@@ -203,13 +218,18 @@ class GameScreen:
     def handle_connection_error(self):
         messagebox.showinfo(message='Opponent quit')
         self.return_to_main()
-        print(f'threads: {threading.enumerate()}')
 
     def order(self):
         if self.root.game.turn == 'second':
             for i in range(FIELD_SIZE):
                 for j in range(FIELD_SIZE):
                     self.enemy_buttons[i][j].state(['disabled'])
+
+    def game_over(self):
+        if self.root.game.mode == 'online':
+            asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('end'),
+                                         self.root.game.thread.asyncio_loop)
+        self.root.bind('<Escape>', lambda e: self.return_to_main())
 
     def enemy_turn(self):
         pos = self.queue.get()
@@ -221,6 +241,9 @@ class GameScreen:
         elif status == 'sank' or status == 'dead':
             for coord in self.root.game.me.field.sank[-1].status.keys():
                 self.player_buttons[coord[0]][coord[1]]['style'] = 'Sank.TButton'
+
+            if status == 'dead':
+                self.game_over()
         else:
             self.player_buttons[col][row]['style'] = 'Miss.TButton'
             for i in range(FIELD_SIZE):
@@ -233,9 +256,10 @@ class GameScreen:
     def player_turn(self, pos):
         col, row = pos
         status = self.root.game.player_turn((col, row))
-        self.queue.put((pos, status))
         if self.root.game.mode == 'online':
             asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_queue(pos), self.root.game.thread.asyncio_loop)
+        else:
+            self.queue.put((pos, status))
 
         if status == 'hit':
             self.enemy_buttons[col][row]['style'] = 'Hit.TButton'
@@ -249,6 +273,8 @@ class GameScreen:
                     for j in range(FIELD_SIZE):
                         if self.enemy_buttons[i][j]['style'] == 'Blue.TButton':
                             self.enemy_buttons[i][j].state(['disabled'])
+
+                self.game_over()
         else:
             self.enemy_buttons[col][row]['style'] = 'Miss.TButton'
             for i in range(FIELD_SIZE):

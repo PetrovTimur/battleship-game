@@ -50,10 +50,27 @@ class AsyncioThread(threading.Thread):
     async def play(self):
         await self.connect()
 
-        await self.handle_tech_data()
+        connected = False
 
-        self.screen.start_game()
-        connected = True
+        wait_for_opponent = asyncio.create_task(self.handle_tech_data())
+        handle_error = asyncio.create_task(self.erqueue.get())
+
+        done, pending = await asyncio.wait([wait_for_opponent, handle_error],
+                                           return_when=asyncio.FIRST_COMPLETED)
+
+        for q in done:
+            if q is handle_error:
+                data = q.result()
+                if data == 'quit':
+                    connected = False
+                    self.writer.write(pickle.dumps(data))
+                    await self.writer.drain()
+
+                wait_for_opponent.cancel()
+            else:
+                connected = True
+                handle_error.cancel()
+                self.screen.start_game()
 
         receive_from_server = asyncio.create_task(self.reader.read(100))
         send_to_server = asyncio.create_task(self.aqueue.get())
@@ -75,19 +92,24 @@ class AsyncioThread(threading.Thread):
                     send_to_server = asyncio.create_task(self.aqueue.get())
                     data = q.result()
                     self.writer.write(pickle.dumps(data))
-                    print(f'Sent {data} to server')
                     await self.writer.drain()
                 elif q is handle_error:
                     handle_error = asyncio.create_task(self.erqueue.get())
                     data = q.result()
                     if data == 'quit':
                         connected = False
-                        self.writer.write_eof()
+                        self.writer.write(pickle.dumps(data))
+                        await self.writer.drain()
+                    elif data == 'end':
+                        connected = False
+                        self.writer.write(pickle.dumps(data))
                         await self.writer.drain()
 
         receive_from_server.cancel()
         send_to_server.cancel()
         handle_error.cancel()
+
+        await asyncio.sleep(1)
 
         self.writer.close()
         await self.writer.wait_closed()
