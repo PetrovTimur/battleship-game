@@ -96,16 +96,24 @@ class Player:
             return hit
         else:
             return 'dead'
-        # return hit
+
+
+class Bot(Player):
+    def __init__(self):
+        super().__init__('AI')
+        self.field.auto_place()
 
 
 class Game:
-    def __init__(self, mode):
+    def __init__(self, mode, name):
         self.mode = mode
-        self.me = Player('name')
-        self.enemy = Player('bot')
+        self.me = Player(name)
+        if mode == 'online':
+            self.enemy = None
+        else:
+            self.enemy = Bot()
         self.queue = None
-        self.net = None
+        self.thread = None
         self.turn = None
 
     def player_turn(self, cell):

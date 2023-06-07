@@ -183,7 +183,7 @@ class NewGameSetupScreen:
         self.root.event_generate('<<Main>>')
 
     def start_game(self, mode):
-        self.root.game = Game(mode=mode)
+        self.root.game = Game(mode, self.root.appOpts['name'])
 
         self.root.event_generate('<<ShipPlacement>>')
 

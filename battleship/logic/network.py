@@ -15,7 +15,9 @@ class AsyncioThread(threading.Thread):
         self.reader = None
         self.writer = None
         self.game = game
-        threading.Thread.__init__(self)
+        self.aqueue = asyncio.Queue()
+        self.erqueue = asyncio.Queue()
+        super().__init__(daemon=True)
 
     def update_screen(self, screen):
         self.screen = screen
@@ -26,64 +28,91 @@ class AsyncioThread(threading.Thread):
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(SERVER_IP, 8888)
 
-    async def shoot(self):
-        pos, status = self.queue.get()
-        self.writer.write(pickle.dumps(pos))
-        await self.writer.drain()
+    async def put_in_queue(self, data):
+        await self.aqueue.put(data)
 
-        if status == 'dead':
-            self.status = False
+    async def put_in_erqueue(self, data):
+        await self.erqueue.put(data)
 
-        return status == 'hit' or status == 'sank'
-
-    async def get_shot(self):
-        data = await self.reader.read(100)
-
-        pos = pickle.loads(data)
-        status = self.screen.enemy_turn(pos)
-
-        if status == 'dead':
-            self.status = False
-
-        return status == 'hit' or status == 'sank'
-
-    async def play(self):
-        await self.connect()
+    async def handle_tech_data(self):
         data = await self.reader.read(100)
         turn = data.decode()
-        self.game.turn = turn
+        self.queue.put(turn)
 
         me = self.game.me
         self.writer.write(pickle.dumps(me))
         await self.writer.drain()
 
         data = await self.reader.read(1000)
-        opponent = pickle.loads(data)
-        self.game.enemy = opponent
+        enemy = pickle.loads(data)
+        self.queue.put(enemy)
 
-        self.screen.start_game()
+    async def play(self):
+        await self.connect()
 
-        if turn == 'first':
-            while self.status:
-                while await self.shoot():
-                    await asyncio.sleep(0.5)
+        connected = False
 
-                if not self.status:
-                    break
+        wait_for_opponent = asyncio.create_task(self.handle_tech_data())
+        handle_error = asyncio.create_task(self.erqueue.get())
 
-                while await self.get_shot():
-                    continue
-        else:
-            while self.status:
-                while await self.get_shot():
-                    continue
+        done, pending = await asyncio.wait([wait_for_opponent, handle_error],
+                                           return_when=asyncio.FIRST_COMPLETED)
 
-                if not self.status:
-                    break
+        for q in done:
+            if q is handle_error:
+                data = q.result()
+                if data == 'quit':
+                    connected = False
+                    self.writer.write(pickle.dumps(data))
+                    await self.writer.drain()
 
-                while await self.shoot():
-                    await asyncio.sleep(0.5)
+                wait_for_opponent.cancel()
+            else:
+                connected = True
+                handle_error.cancel()
+                self.screen.start_game()
 
-        print('Close the connection')
+        receive_from_server = asyncio.create_task(self.reader.read(100))
+        send_to_server = asyncio.create_task(self.aqueue.get())
+        handle_error = asyncio.create_task(self.erqueue.get())
+        while not self.reader.at_eof() and connected:
+            done, pending = await asyncio.wait([send_to_server, receive_from_server, handle_error],
+                                               return_when=asyncio.FIRST_COMPLETED)
+            for q in done:
+                if q is receive_from_server:
+                    receive_from_server = asyncio.create_task(self.reader.read(100))
+                    try:
+                        data = pickle.loads(q.result())
+                        self.screen.queue.put(data)
+                        self.screen.frame.event_generate('<<EnemyTurn>>')
+                    except EOFError:
+                        connected = False
+                        self.screen.handle_connection_error()
+                elif q is send_to_server:
+                    send_to_server = asyncio.create_task(self.aqueue.get())
+                    data = q.result()
+                    self.writer.write(pickle.dumps(data))
+                    await self.writer.drain()
+                elif q is handle_error:
+                    handle_error = asyncio.create_task(self.erqueue.get())
+                    data = q.result()
+                    if data == 'quit':
+                        connected = False
+                        self.writer.write(pickle.dumps(data))
+                        await self.writer.drain()
+                    elif data == 'end':
+                        connected = False
+                        self.writer.write(pickle.dumps(data))
+                        await self.writer.drain()
+
+        receive_from_server.cancel()
+        send_to_server.cancel()
+        handle_error.cancel()
+
+        await asyncio.sleep(1)
+
         self.writer.close()
         await self.writer.wait_closed()
+
+# TODO send eof from server (?)
+# TODO disconnect properly after Esc (?)
