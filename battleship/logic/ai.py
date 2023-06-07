@@ -111,7 +111,7 @@ class PlayingThread(threading.Thread):
     def get_shot(self):
         pos = shot(self.game.me.field.cells)
         self.queue.put(pos)
-        status = self.screen.enemy_turn(pos)
+        status = self.screen.enemy_turn()
 
         if status == 'dead':
             self.status = False

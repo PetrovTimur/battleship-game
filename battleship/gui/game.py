@@ -1,7 +1,9 @@
-from tkinter import ttk
+import threading
+from tkinter import ttk, messagebox
 from battleship.logic import ai, network
 from battleship.logic.ai import get_coords, PlayingThread
 import queue
+import asyncio
 
 FIELD_SIZE = 10
 
@@ -168,6 +170,9 @@ class GameScreen:
 
                 self.enemy_buttons[i][j].configure(command=lambda col=i, row=j: self.player_turn((col, row)))
 
+        self.root.bind('<Escape>', lambda e: self.quit())
+        self.frame.bind('<<EnemyTurn>>', lambda e: self.enemy_turn())
+
         self.queue = self.root.game.queue
         self.root.game.thread.update_screen(self)
 
@@ -181,13 +186,30 @@ class GameScreen:
         self.order()
         self.place()
 
+    def return_to_main(self):
+        self.root.unbind('<Escape>')
+        self.root.event_generate('<<Main>>')
+
+    def quit(self):
+        response = messagebox.askyesno(message='Quit to main?')
+        if response:
+            if self.root.game.mode == 'online':
+                asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
+                                             self.root.game.thread.asyncio_loop)
+            self.return_to_main()
+
+    def handle_connection_error(self):
+        messagebox.showinfo(message='Opponent quit')
+        self.return_to_main()
+        print(f'threads: {threading.enumerate()}')
+
     def order(self):
         if self.root.game.turn == 'second':
             for i in range(FIELD_SIZE):
                 for j in range(FIELD_SIZE):
                     self.enemy_buttons[i][j].state(['disabled'])
 
-    def enemy_turn(self, pos):
+    def enemy_turn(self):
         pos = self.queue.get()
         col, row = pos
         status = self.root.game.enemy_turn((col, row))
@@ -210,6 +232,8 @@ class GameScreen:
         col, row = pos
         status = self.root.game.player_turn((col, row))
         self.queue.put((pos, status))
+        if self.root.game.mode == 'online':
+            asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_queue(pos), self.root.game.thread.asyncio_loop)
 
         if status == 'hit':
             self.enemy_buttons[col][row]['style'] = 'Hit.TButton'
