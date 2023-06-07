@@ -16,7 +16,7 @@ class ShipPlacementScreen:
         self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', command=lambda: self.random_place())
-        self.ready_button = ttk.Button(self.frame, text='Ready', command=lambda: self.ready())
+        self.ready_check = ttk.Checkbutton(self.frame, text='Ready', state='disabled', command=lambda: self.ready())
         self.field_buttons: list[list[ttk.Button]] = []
 
         for i in range(FIELD_SIZE):
@@ -39,7 +39,6 @@ class ShipPlacementScreen:
         self.place()
 
     def ready(self):
-        self.ready_button['state'] = ['disabled']
 
         self.root.game.queue = queue.Queue()
         if self.root.game.mode == 'single':
@@ -64,6 +63,8 @@ class ShipPlacementScreen:
                     if self.root.game.me.field.cells[i][j] > 0 else 'Blue.TButton'
                 self.field_buttons[i][j].state(['disabled'])
 
+        self.ready_check.state(['!disabled'])
+
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')
         self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
@@ -73,7 +74,7 @@ class ShipPlacementScreen:
         self.title.grid(column=5, row=0, columnspan=6, rowspan=2)
         self.field_frame.grid(column=5, row=2, columnspan=6, rowspan=6, sticky='nsew')
         self.random_button.grid(column=12, row=5, columnspan=3)
-        self.ready_button.grid(column=12, row=7, columnspan=3)
+        self.ready_check.grid(column=12, row=7, columnspan=3)
 
         self.field_frame.grid_propagate(False)
 
@@ -133,6 +134,7 @@ class ShipPlacementScreen:
 
         if self.root.game.me.field.check_placed():
             self.update_field()
+            self.ready_check.state(['!disabled'])
 
     def update_field(self):
         for i in range(FIELD_SIZE):
