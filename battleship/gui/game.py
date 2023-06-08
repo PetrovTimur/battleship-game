@@ -53,7 +53,7 @@ class ShipPlacementScreen:
             self.root.game.queue = None
             if self.root.game.mode == 'online':
                 asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
-                                             self.root.game.thread.asyncio_loop)
+                                                 self.root.game.thread.asyncio_loop)
             self.root.game.thread = None
 
     def start_game(self):
@@ -73,7 +73,7 @@ class ShipPlacementScreen:
 
         for i in range(FIELD_SIZE):
             for j in range(FIELD_SIZE):
-                self.field_buttons[i][j]['style'] = 'Ship.TButton'\
+                self.field_buttons[i][j]['style'] = 'Ship.TButton' \
                     if self.root.game.me.field.cells[i][j] > 0 else 'Blue.TButton'
                 self.field_buttons[i][j].state(['disabled'])
 
@@ -168,19 +168,27 @@ class GameScreen:
         self.player_label = ttk.Label(self.frame, text='')
         self.enemy_label = ttk.Label(self.frame, text='')
 
-        self.player_field = ttk.Frame(self.frame, style='Blue.TFrame')
-        self.enemy_field = ttk.Frame(self.frame, style='Blue.TFrame')
+        self.player_field = ttk.Frame(self.frame)
+        self.enemy_field = ttk.Frame(self.frame)
         self.player_buttons: list[list[ttk.Button]] = []
         self.enemy_buttons: list[list[ttk.Button]] = []
+        self.player_row_labels: list[ttk.Label] = []
+        self.player_col_labels: list[ttk.Label] = []
+        self.enemy_row_labels: list[ttk.Label] = []
+        self.enemy_col_labels: list[ttk.Label] = []
 
         for i in range(FIELD_SIZE):
             self.player_buttons.append([])
             self.enemy_buttons.append([])
+            self.player_row_labels.append(ttk.Label(self.player_field, text=str(i + 1), width=3, anchor='center'))
+            self.player_col_labels.append(ttk.Label(self.player_field, text=chr(ord('A') + i), width=3, anchor='center'))
+            self.enemy_row_labels.append(ttk.Label(self.enemy_field, text=str(i + 1), width=3, anchor='center'))
+            self.enemy_col_labels.append(ttk.Label(self.enemy_field, text=chr(ord('A') + i), width=3, anchor='center'))
             for j in range(FIELD_SIZE):
                 self.player_buttons[i].append(ttk.Button(self.player_field, style='Blue.TButton'))
                 self.enemy_buttons[i].append(ttk.Button(self.enemy_field, style='Blue.TButton'))
 
-                self.player_buttons[i][j]['style'] = 'Ship.TButton'\
+                self.player_buttons[i][j]['style'] = 'Ship.TButton' \
                     if self.root.game.me.field.cells[i][j] > 0 else 'Blue.TButton'
                 self.player_buttons[i][j].state(['disabled'])
 
@@ -212,7 +220,7 @@ class GameScreen:
         if response:
             if self.root.game.mode == 'online':
                 asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
-                                             self.root.game.thread.asyncio_loop)
+                                                 self.root.game.thread.asyncio_loop)
             self.return_to_main()
 
     def handle_connection_error(self):
@@ -228,7 +236,7 @@ class GameScreen:
     def game_over(self):
         if self.root.game.mode == 'online':
             asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('end'),
-                                         self.root.game.thread.asyncio_loop)
+                                             self.root.game.thread.asyncio_loop)
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
     def enemy_turn(self):
@@ -257,7 +265,8 @@ class GameScreen:
         col, row = pos
         status = self.root.game.player_turn((col, row))
         if self.root.game.mode == 'online':
-            asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_queue(pos), self.root.game.thread.asyncio_loop)
+            asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_queue(pos),
+                                             self.root.game.thread.asyncio_loop)
         else:
             self.queue.put((pos, status))
 
@@ -290,8 +299,8 @@ class GameScreen:
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
                                    weight=1, minsize=40)
 
-        self.player_label.grid(column=1, row=0, columnspan=6, rowspan=2)
-        self.enemy_label.grid(column=9, row=0, columnspan=6, rowspan=2)
+        self.player_label.grid(column=1, row=8, columnspan=6, rowspan=2)
+        self.enemy_label.grid(column=9, row=8, columnspan=6, rowspan=2)
 
         self.player_field.grid(column=1, row=2, columnspan=6, rowspan=6, sticky='nsew')
         self.enemy_field.grid(column=9, row=2, columnspan=6, rowspan=6, sticky='nsew')
@@ -299,14 +308,18 @@ class GameScreen:
         self.enemy_field.grid_propagate(False)
 
         for i in range(FIELD_SIZE):
+            self.player_row_labels[i].grid(column=0, row=i + 1, sticky='nsew')
+            self.player_col_labels[i].grid(column=i + 1, row=0, sticky='nsew')
+            self.enemy_row_labels[i].grid(column=0, row=i + 1, sticky='nsew')
+            self.enemy_col_labels[i].grid(column=i + 1, row=0, sticky='nsew')
             for j in range(FIELD_SIZE):
-                self.player_buttons[i][j].grid(column=i, row=FIELD_SIZE - j - 1, sticky='nsew')
-                self.enemy_buttons[i][j].grid(column=i, row=FIELD_SIZE - j - 1, sticky='nsew')
+                self.player_buttons[i][j].grid(column=i + 1, row=FIELD_SIZE - j, sticky='nsew')
+                self.enemy_buttons[i][j].grid(column=i + 1, row=FIELD_SIZE - j, sticky='nsew')
 
-        self.player_field.rowconfigure('all', weight=1)
-        self.player_field.columnconfigure('all', weight=1)
-        self.enemy_field.rowconfigure('all', weight=1)
-        self.enemy_field.columnconfigure('all', weight=1)
+        self.player_field.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
+        self.player_field.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
+        self.enemy_field.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
+        self.enemy_field.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
 
     def destroy(self):
         self.frame.destroy()
