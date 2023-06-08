@@ -1,6 +1,5 @@
-import threading
-from tkinter import ttk, messagebox, BooleanVar
-from battleship.logic import ai, network, network2
+from tkinter import ttk, messagebox, BooleanVar, StringVar
+from battleship.logic import ai, network
 from battleship.logic.ai import get_coords, PlayingThread
 import queue
 import asyncio
@@ -168,6 +167,9 @@ class GameScreen:
         self.player_label = ttk.Label(self.frame, text='')
         self.enemy_label = ttk.Label(self.frame, text='')
 
+        self.activity = StringVar()
+        self.activity_label = ttk.Label(self.frame, textvariable=self.activity, justify='center', anchor='center')
+
         self.player_field = ttk.Frame(self.frame)
         self.enemy_field = ttk.Frame(self.frame)
         self.player_buttons: list[list[ttk.Button]] = []
@@ -207,6 +209,8 @@ class GameScreen:
         self.player_label['text'] = self.root.game.me.name
         self.enemy_label['text'] = self.root.game.enemy.name
 
+        self.activity.set(f'Game between {self.root.game.me.name!r} and {self.root.game.enemy.name!r} starts...')
+
         self.order()
         self.place()
 
@@ -233,6 +237,12 @@ class GameScreen:
                 for j in range(FIELD_SIZE):
                     self.enemy_buttons[i][j].state(['disabled'])
 
+    def update_activity(self, coord, player, status):
+        col, row = coord
+        coord = chr(ord('A') + col) + str(10 - row)
+        self.activity.set(f'{player} shoots at {coord}\n'
+                          f'result: {status}')
+
     def game_over(self):
         if self.root.game.mode == 'online':
             asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('end'),
@@ -244,6 +254,7 @@ class GameScreen:
         col, row = pos
         status = self.root.game.enemy_turn((col, row))
 
+        self.update_activity(pos, self.root.game.enemy.name, status)
         if status == 'hit':
             self.player_buttons[col][row]['style'] = 'Hit.TButton'
         elif status == 'sank' or status == 'dead':
@@ -270,6 +281,7 @@ class GameScreen:
         else:
             self.queue.put((pos, status))
 
+        self.update_activity(pos, self.root.game.me.name, status)
         if status == 'hit':
             self.enemy_buttons[col][row]['style'] = 'Hit.TButton'
         elif status == 'sank' or status == 'dead':
@@ -299,8 +311,10 @@ class GameScreen:
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
                                    weight=1, minsize=40)
 
-        self.player_label.grid(column=1, row=8, columnspan=6, rowspan=2)
-        self.enemy_label.grid(column=9, row=8, columnspan=6, rowspan=2)
+        self.player_label.grid(column=1, row=8, columnspan=6, rowspan=1)
+        self.enemy_label.grid(column=9, row=8, columnspan=6, rowspan=1)
+
+        self.activity_label.grid(column=5, row=0, columnspan=6, rowspan=2, sticky='nsew')
 
         self.player_field.grid(column=1, row=2, columnspan=6, rowspan=6, sticky='nsew')
         self.enemy_field.grid(column=9, row=2, columnspan=6, rowspan=6, sticky='nsew')
