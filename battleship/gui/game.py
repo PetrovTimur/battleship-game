@@ -1,6 +1,5 @@
-import threading
-from tkinter import ttk, messagebox, BooleanVar
-from battleship.logic import ai, network, network2
+from tkinter import ttk, messagebox, BooleanVar, StringVar
+from battleship.logic import ai, network
 from battleship.logic.ai import get_coords, PlayingThread
 import queue
 import asyncio
@@ -16,6 +15,7 @@ class ShipPlacementScreen:
         self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', command=lambda: self.random_place())
+        self.clear_button = ttk.Button(self.frame, text='Clear', command=lambda: self.clear())
         self.is_ready = BooleanVar(value=False)
         self.ready_check = ttk.Checkbutton(self.frame, text='Ready',
                                            state='disabled', command=lambda: self.ready(),
@@ -53,7 +53,7 @@ class ShipPlacementScreen:
             self.root.game.queue = None
             if self.root.game.mode == 'online':
                 asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
-                                             self.root.game.thread.asyncio_loop)
+                                                 self.root.game.thread.asyncio_loop)
             self.root.game.thread = None
 
     def start_game(self):
@@ -73,11 +73,22 @@ class ShipPlacementScreen:
 
         for i in range(FIELD_SIZE):
             for j in range(FIELD_SIZE):
-                self.field_buttons[i][j]['style'] = 'Ship.TButton'\
+                self.field_buttons[i][j]['style'] = 'Ship.TButton' \
                     if self.root.game.me.field.cells[i][j] > 0 else 'Blue.TButton'
                 self.field_buttons[i][j].state(['disabled'])
 
         self.ready_check.state(['!disabled'])
+
+    def clear(self):
+        self.root.game.me.field.clear()
+
+        for i in range(FIELD_SIZE):
+            for j in range(FIELD_SIZE):
+                self.field_buttons[i][j]['style'] = 'Blue.TButton'
+                self.field_buttons[i][j].state(['!disabled'])
+
+        self.is_ready.set(False)
+        self.ready_check.state(['disabled'])
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')
@@ -88,6 +99,7 @@ class ShipPlacementScreen:
         self.title.grid(column=5, row=0, columnspan=6, rowspan=2)
         self.field_frame.grid(column=5, row=2, columnspan=6, rowspan=6, sticky='nsew')
         self.random_button.grid(column=12, row=5, columnspan=3)
+        self.clear_button.grid(column=12, row=4, columnspan=3)
         self.ready_check.grid(column=12, row=7, columnspan=3)
 
         self.field_frame.grid_propagate(False)
@@ -141,7 +153,7 @@ class ShipPlacementScreen:
             return
 
         for col, row in coords:
-            self.field_buttons[col][row].state(['disabled'])
+            self.field_buttons[col][row].state(['disabled', '!hover'])
             self.field_buttons[col][row]['style'] = 'Ship.TButton'
 
         self.root.game.me.field.place(coords)
@@ -168,19 +180,30 @@ class GameScreen:
         self.player_label = ttk.Label(self.frame, text='')
         self.enemy_label = ttk.Label(self.frame, text='')
 
-        self.player_field = ttk.Frame(self.frame, style='Blue.TFrame')
-        self.enemy_field = ttk.Frame(self.frame, style='Blue.TFrame')
+        self.activity = StringVar()
+        self.activity_label = ttk.Label(self.frame, textvariable=self.activity, justify='center', anchor='center')
+
+        self.player_field = ttk.Frame(self.frame)
+        self.enemy_field = ttk.Frame(self.frame)
         self.player_buttons: list[list[ttk.Button]] = []
         self.enemy_buttons: list[list[ttk.Button]] = []
+        self.player_row_labels: list[ttk.Label] = []
+        self.player_col_labels: list[ttk.Label] = []
+        self.enemy_row_labels: list[ttk.Label] = []
+        self.enemy_col_labels: list[ttk.Label] = []
 
         for i in range(FIELD_SIZE):
             self.player_buttons.append([])
             self.enemy_buttons.append([])
+            self.player_row_labels.append(ttk.Label(self.player_field, text=str(i + 1), width=3, anchor='center'))
+            self.player_col_labels.append(ttk.Label(self.player_field, text=chr(ord('A') + i), width=3, anchor='center'))
+            self.enemy_row_labels.append(ttk.Label(self.enemy_field, text=str(i + 1), width=3, anchor='center'))
+            self.enemy_col_labels.append(ttk.Label(self.enemy_field, text=chr(ord('A') + i), width=3, anchor='center'))
             for j in range(FIELD_SIZE):
                 self.player_buttons[i].append(ttk.Button(self.player_field, style='Blue.TButton'))
                 self.enemy_buttons[i].append(ttk.Button(self.enemy_field, style='Blue.TButton'))
 
-                self.player_buttons[i][j]['style'] = 'Ship.TButton'\
+                self.player_buttons[i][j]['style'] = 'Ship.TButton' \
                     if self.root.game.me.field.cells[i][j] > 0 else 'Blue.TButton'
                 self.player_buttons[i][j].state(['disabled'])
 
@@ -199,6 +222,8 @@ class GameScreen:
         self.player_label['text'] = self.root.game.me.name
         self.enemy_label['text'] = self.root.game.enemy.name
 
+        self.activity.set(f'Game between {self.root.game.me.name!r} and {self.root.game.enemy.name!r} starts...')
+
         self.order()
         self.place()
 
@@ -212,7 +237,7 @@ class GameScreen:
         if response:
             if self.root.game.mode == 'online':
                 asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
-                                             self.root.game.thread.asyncio_loop)
+                                                 self.root.game.thread.asyncio_loop)
             self.return_to_main()
 
     def handle_connection_error(self):
@@ -225,10 +250,16 @@ class GameScreen:
                 for j in range(FIELD_SIZE):
                     self.enemy_buttons[i][j].state(['disabled'])
 
+    def update_activity(self, coord, player, status):
+        col, row = coord
+        coord = chr(ord('A') + col) + str(10 - row)
+        self.activity.set(f'{player} shoots at {coord}\n'
+                          f'result: {status}')
+
     def game_over(self):
         if self.root.game.mode == 'online':
             asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('end'),
-                                         self.root.game.thread.asyncio_loop)
+                                             self.root.game.thread.asyncio_loop)
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
     def enemy_turn(self):
@@ -236,6 +267,7 @@ class GameScreen:
         col, row = pos
         status = self.root.game.enemy_turn((col, row))
 
+        self.update_activity(pos, self.root.game.enemy.name, status)
         if status == 'hit':
             self.player_buttons[col][row]['style'] = 'Hit.TButton'
         elif status == 'sank' or status == 'dead':
@@ -257,10 +289,12 @@ class GameScreen:
         col, row = pos
         status = self.root.game.player_turn((col, row))
         if self.root.game.mode == 'online':
-            asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_queue(pos), self.root.game.thread.asyncio_loop)
+            asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_queue(pos),
+                                             self.root.game.thread.asyncio_loop)
         else:
             self.queue.put((pos, status))
 
+        self.update_activity(pos, self.root.game.me.name, status)
         if status == 'hit':
             self.enemy_buttons[col][row]['style'] = 'Hit.TButton'
         elif status == 'sank' or status == 'dead':
@@ -290,8 +324,10 @@ class GameScreen:
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
                                    weight=1, minsize=40)
 
-        self.player_label.grid(column=1, row=0, columnspan=6, rowspan=2)
-        self.enemy_label.grid(column=9, row=0, columnspan=6, rowspan=2)
+        self.player_label.grid(column=1, row=8, columnspan=6, rowspan=1)
+        self.enemy_label.grid(column=9, row=8, columnspan=6, rowspan=1)
+
+        self.activity_label.grid(column=5, row=0, columnspan=6, rowspan=2, sticky='nsew')
 
         self.player_field.grid(column=1, row=2, columnspan=6, rowspan=6, sticky='nsew')
         self.enemy_field.grid(column=9, row=2, columnspan=6, rowspan=6, sticky='nsew')
@@ -299,14 +335,18 @@ class GameScreen:
         self.enemy_field.grid_propagate(False)
 
         for i in range(FIELD_SIZE):
+            self.player_row_labels[i].grid(column=0, row=i + 1, sticky='nsew')
+            self.player_col_labels[i].grid(column=i + 1, row=0, sticky='nsew')
+            self.enemy_row_labels[i].grid(column=0, row=i + 1, sticky='nsew')
+            self.enemy_col_labels[i].grid(column=i + 1, row=0, sticky='nsew')
             for j in range(FIELD_SIZE):
-                self.player_buttons[i][j].grid(column=i, row=FIELD_SIZE - j - 1, sticky='nsew')
-                self.enemy_buttons[i][j].grid(column=i, row=FIELD_SIZE - j - 1, sticky='nsew')
+                self.player_buttons[i][j].grid(column=i + 1, row=FIELD_SIZE - j, sticky='nsew')
+                self.enemy_buttons[i][j].grid(column=i + 1, row=FIELD_SIZE - j, sticky='nsew')
 
-        self.player_field.rowconfigure('all', weight=1)
-        self.player_field.columnconfigure('all', weight=1)
-        self.enemy_field.rowconfigure('all', weight=1)
-        self.enemy_field.columnconfigure('all', weight=1)
+        self.player_field.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
+        self.player_field.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
+        self.enemy_field.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
+        self.enemy_field.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
 
     def destroy(self):
         self.frame.destroy()

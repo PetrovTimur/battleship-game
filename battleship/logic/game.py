@@ -69,6 +69,13 @@ class Field:
                 return False
         return True
 
+    def clear(self):
+        self.placed = 0
+        self.cells = [([0] * 10) for i in range(10)]
+        self.ships = [Ship(4), Ship(3), Ship(3),
+                      Ship(2), Ship(2), Ship(2),
+                      Ship(1), Ship(1), Ship(1), Ship(1)]
+
     def place(self, coords):
         for coord in coords:
             self.cells[coord[0]][coord[1]] = self.placed + 1
