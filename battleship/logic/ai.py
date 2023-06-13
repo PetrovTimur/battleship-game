@@ -86,7 +86,7 @@ def random_ships(cells):
     return ships_coords
 
 
-class PlayingThread(threading.Thread):
+class BotThread(threading.Thread):
     def __init__(self, game, screen):
         self.queue = game.queue
         self.screen = screen
@@ -101,7 +101,11 @@ class PlayingThread(threading.Thread):
         super().run()
 
     def shoot(self):
-        pos, status = self.queue.get()
+        try:
+            pos, status = self.queue.get()
+        except ValueError:
+            self.status = False
+            return False
 
         if status == 'dead':
             self.status = False
@@ -111,7 +115,11 @@ class PlayingThread(threading.Thread):
     def get_shot(self):
         pos = shot(self.game.me.field.cells)
         self.queue.put(pos)
-        status = self.screen.enemy_turn()
+        try:
+            status = self.screen.enemy_turn()
+        except ValueError:
+            self.status = False
+            return False
 
         if status == 'dead':
             self.status = False

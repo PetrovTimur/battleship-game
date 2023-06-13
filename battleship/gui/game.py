@@ -1,6 +1,6 @@
 from tkinter import ttk, messagebox, BooleanVar, StringVar
-from battleship.logic import ai, network
-from battleship.logic.ai import get_coords, PlayingThread
+from battleship.logic import network
+from battleship.logic.ai import get_coords, BotThread
 import queue
 import asyncio
 
@@ -45,7 +45,7 @@ class ShipPlacementScreen:
         if self.is_ready.get():
             self.root.game.queue = queue.Queue()
             if self.root.game.mode == 'single':
-                self.root.game.thread = PlayingThread(self.root.game, self)
+                self.root.game.thread = BotThread(self.root.game, self)
             else:
                 self.root.game.thread = network.AsyncioThread(self.root.game, self)
             self.root.game.thread.start()
@@ -238,6 +238,8 @@ class GameScreen:
             if self.root.game.mode == 'online':
                 asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
                                                  self.root.game.thread.asyncio_loop)
+            else:
+                self.queue.put('quit')
             self.return_to_main()
 
     def handle_connection_error(self):
@@ -260,6 +262,8 @@ class GameScreen:
         if self.root.game.mode == 'online':
             asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('end'),
                                              self.root.game.thread.asyncio_loop)
+        else:
+            self.queue.put('end')
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
     def enemy_turn(self):
