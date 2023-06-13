@@ -75,7 +75,8 @@ class SettingsScreen:
             self.settings_frame,
             variable=self.fullscreen,
             takefocus=False,
-            command=self.set_fullscreen)
+            command=self.set_fullscreen,
+            style='Blue.TCheckbutton')
 
         self.language = StringVar(self.settings_frame, self.root.appOpts['language'])
         self.language_options = ['English', 'Русский']

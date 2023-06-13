@@ -19,7 +19,7 @@ class ShipPlacementScreen:
         self.is_ready = BooleanVar(value=False)
         self.ready_check = ttk.Checkbutton(self.frame, text='Ready', takefocus=False,
                                            state='disabled', command=self.ready,
-                                           variable=self.is_ready, onvalue=True, offvalue=False)
+                                           variable=self.is_ready, onvalue=True, offvalue=False, style='Blue.TCheckbutton')
         self.field_buttons: list[list[ttk.Button]] = []
 
         for i in range(FIELD_SIZE):
@@ -35,7 +35,7 @@ class ShipPlacementScreen:
 
                 self.field_buttons[i][j].configure(command=lambda col=i, row=j: self.place_ship((col, row)))
 
-        self.root.bind('<Escape>', self.return_to_main)
+        self.root.bind('<Escape>', lambda e: self.return_to_main())
 
         self.angle = 's'
 
