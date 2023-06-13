@@ -28,7 +28,7 @@ class StartScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False, **buttonConfig))
 
         self.place()
 
@@ -74,6 +74,7 @@ class SettingsScreen:
         self.fullscreen_button = ttk.Checkbutton(
             self.settings_frame,
             variable=self.fullscreen,
+            takefocus=False,
             command=self.set_fullscreen)
 
         self.language = StringVar(self.settings_frame, self.root.appOpts['language'])
@@ -112,6 +113,7 @@ class SettingsScreen:
         if self.fullscreen.get():
             width = self.root.winfo_screenwidth()
             height = self.root.winfo_screenheight()
+            self.root.geometry(f"{width}x{height}")
             self.resolution.set(f"{width}x{height}")
             self.root.attributes('-fullscreen', True)
         else:
@@ -175,7 +177,7 @@ class NewGameSetupScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False, **buttonConfig))
 
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
