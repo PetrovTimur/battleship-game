@@ -1,6 +1,6 @@
 from tkinter import ttk, messagebox, BooleanVar, StringVar
 from battleship.logic import network
-from battleship.logic.ai import get_coords, BotThread
+from battleship.logic.ai import get_coords, surrounding, BotThread
 import queue
 import asyncio
 
@@ -13,6 +13,8 @@ class ShipPlacementScreen:
 
         self.frame = ttk.Frame(self.root)
         self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
+        self.message = StringVar()
+        self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center', anchor='center')
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', takefocus=False, command=self.random_place)
         self.clear_button = ttk.Button(self.frame, text='Clear', takefocus=False, command=self.clear)
@@ -40,6 +42,9 @@ class ShipPlacementScreen:
         self.angle = 's'
 
         self.place()
+        self.root.update_idletasks()
+
+        self.message_label.configure(wraplength=self.frame.winfo_width() // 16 * 2)
 
     def ready(self):
         if self.is_ready.get():
@@ -101,6 +106,7 @@ class ShipPlacementScreen:
         self.random_button.grid(column=12, row=5, columnspan=3)
         self.clear_button.grid(column=12, row=4, columnspan=3)
         self.ready_check.grid(column=12, row=7, columnspan=3)
+        self.message_label.grid(column=0, row=3, columnspan=5, rowspan=4)
 
         self.field_frame.grid_propagate(False)
 
@@ -118,7 +124,15 @@ class ShipPlacementScreen:
         if current_button.instate(['!disabled']):
             size = self.root.game.me.field.ships[self.root.game.me.field.placed].size
 
-            coords = get_coords(pos, size, self.angle)
+            coords = get_coords(pos, size, self.angle, self.root.game.me.field.cells)
+            if len(coords) < size:
+                if self.message.get() == '':
+                    self.message.set('Can\'t put here. Try moving or rotating the ship')
+                return
+
+            if self.message.get() != '':
+                self.message.set('')
+
             for col, row in coords:
                 self.field_buttons[col][row].state(['hover'])
 
@@ -128,7 +142,10 @@ class ShipPlacementScreen:
         if current_button.instate(['!disabled']):
             size = self.root.game.me.field.ships[self.root.game.me.field.placed].size
 
-            coords = get_coords(pos, size, self.angle)
+            coords = get_coords(pos, size, self.angle, self.root.game.me.field.cells)
+            if len(coords) < size:
+                return
+
             for col, row in coords:
                 self.field_buttons[col][row].state(['!hover'])
 
@@ -148,13 +165,18 @@ class ShipPlacementScreen:
     def place_ship(self, pos):
         size = self.root.game.me.field.ships[self.root.game.me.field.placed].size
 
-        coords = get_coords(pos, size, self.angle)
+        coords = get_coords(pos, size, self.angle, self.root.game.me.field.cells)
         if len(coords) < size:
             return
+
+        around = surrounding(coords)
 
         for col, row in coords:
             self.field_buttons[col][row].state(['disabled', '!hover'])
             self.field_buttons[col][row]['style'] = 'Ship.TButton'
+
+        for col, row in around:
+            self.field_buttons[col][row].state(['disabled', '!hover'])
 
         self.root.game.me.field.place(coords)
 
