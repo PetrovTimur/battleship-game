@@ -59,8 +59,7 @@ class SettingsScreen:
         self.name_entry = ttk.Entry(
             self.settings_frame,
             justify='center',
-            textvariable=self.name
-        )
+            textvariable=self.name)
 
         self.resolution = StringVar(self.frame, self.root.appOpts['resolution'])
         self.resolution_options = ['640x360', '960x540', '1280x720', '1600x900', '1920x1080', '2560x1440']
@@ -69,15 +68,13 @@ class SettingsScreen:
             self.resolution,
             self.resolution.get(),
             *self.resolution_options,
-            command=lambda res: self.root.geometry(res)
-        )
+            command=lambda res: self.root.geometry(res))
 
         self.fullscreen = BooleanVar(self.settings_frame, self.root.appOpts.getboolean('fullscreen'))
         self.fullscreen_button = ttk.Checkbutton(
             self.settings_frame,
             variable=self.fullscreen,
-            command=lambda: self.root.attributes('-fullscreen', self.fullscreen.get())
-        )
+            command=self.set_fullscreen)
 
         self.language = StringVar(self.settings_frame, self.root.appOpts['language'])
         self.language_options = ['English', 'Русский']
@@ -86,8 +83,7 @@ class SettingsScreen:
             self.language,
             self.language.get(),
             *self.language_options,
-            command=lambda lang: print('lang change')
-        )
+            command=lambda lang: print('lang change'))
 
         self.labelsConfig = [
             {
@@ -101,8 +97,7 @@ class SettingsScreen:
             },
             {
                 "text": "Language"
-            },
-        ]
+            }]
 
         self.labels = []
 
@@ -112,6 +107,15 @@ class SettingsScreen:
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
         self.place()
+
+    def set_fullscreen(self):
+        if self.fullscreen.get():
+            width = self.root.winfo_screenwidth()
+            height = self.root.winfo_screenheight()
+            self.resolution.set(f"{width}x{height}")
+            self.root.attributes('-fullscreen', True)
+        else:
+            self.root.attributes('-fullscreen', False)
 
     def return_to_main(self):
         self.root.unbind('<Escape>')
@@ -166,8 +170,7 @@ class NewGameSetupScreen:
             {
                 "text": "Online",
                 "command": lambda: self.start_game('online'),
-            },
-        ]
+            }]
 
         self.buttons = []
 
