@@ -2,7 +2,9 @@ from tkinter import Tk
 from .menu import StartScreen, SettingsScreen, NewGameSetupScreen
 from .game import ShipPlacementScreen, GameScreen
 from battleship.util import Config
-from .styles import Style
+from battleship.util.image import loadImage
+from battleship.resources import icon
+from .styles import initialize_styles
 
 
 class App(Tk):
@@ -17,10 +19,12 @@ class App(Tk):
 
         self.appOpts = Config.get()
 
+        self.icon = loadImage(icon, (64, 64))
+        self.iconphoto(True, self.icon)
         self.geometry(self.appOpts['resolution'])
         self.attributes('-fullscreen', self.appOpts.getboolean('fullscreen'))
 
-        self.style = Style()
+        initialize_styles()
 
         self.bind('<<Main>>', lambda e: self.change_screen('Main'))
         self.bind('<<Settings>>', lambda e: self.change_screen('Settings'))

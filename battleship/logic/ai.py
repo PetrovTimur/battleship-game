@@ -12,7 +12,7 @@ def shot(cells) -> (int, int):
     return coords
 
 
-def get_coords(position, size, angle):
+def get_coords(position, size, angle, field=None):
     angles = {'w': (-1, 0),
               'n': (0, 1),
               'e': (1, 0),
@@ -21,14 +21,31 @@ def get_coords(position, size, angle):
     offset = angles[angle]
     coords = []
 
-    if (0 <= position[0] < 10 and 0 <= position[1] < 10
-        and size > 0
-        and 0 <= position[0] + (size - 1) * offset[0] < 10
-        and 0 <= position[1] + (size - 1) * offset[1] < 10):
-        for i in range(size):
-            coords.append((position[0] + i * offset[0], position[1] + i * offset[1]))
+    for i in range(size):
+        coord = (position[0] + i * offset[0], position[1] + i * offset[1])
+        if 0 <= coord[0] < 10 and 0 <= coord[1] < 10:
+            if field is not None:
+                for surr in surrounding([coord]):
+                    col, row = surr
+                    if field[col][row] > 0:
+                        return []
+
+            coords.append(coord)
 
     return coords
+
+
+def surrounding(coords):
+    surr = []
+    for coord in coords:
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                new_coord = (coord[0] + dx, coord[1] + dy)
+                if 0 <= coord[0] + dx < 10 and 0 <= coord[1] + dy < 10 \
+                        and new_coord not in coords and new_coord not in surr:
+                    surr.append(new_coord)
+
+    return surr
 
 
 def random_ships_matrix():
@@ -86,7 +103,7 @@ def random_ships(cells):
     return ships_coords
 
 
-class PlayingThread(threading.Thread):
+class BotThread(threading.Thread):
     def __init__(self, game, screen):
         self.queue = game.queue
         self.screen = screen
@@ -101,7 +118,11 @@ class PlayingThread(threading.Thread):
         super().run()
 
     def shoot(self):
-        pos, status = self.queue.get()
+        try:
+            pos, status = self.queue.get()
+        except ValueError:
+            self.status = False
+            return False
 
         if status == 'dead':
             self.status = False
@@ -111,7 +132,11 @@ class PlayingThread(threading.Thread):
     def get_shot(self):
         pos = shot(self.game.me.field.cells)
         self.queue.put(pos)
-        status = self.screen.enemy_turn()
+        try:
+            status = self.screen.enemy_turn()
+        except ValueError:
+            self.status = False
+            return False
 
         if status == 'dead':
             self.status = False
@@ -144,11 +169,7 @@ class PlayingThread(threading.Thread):
                 while self.shoot():
                     continue
 
-        print('Closed')
-
 
 if __name__ == "__main__":
     import doctest
     doctest.testfile("ai_tests.txt")
-
-# TODO rework coords to prevent placing at already occupied and nearby spots
