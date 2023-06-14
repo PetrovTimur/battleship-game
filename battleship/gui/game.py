@@ -1,6 +1,8 @@
-from tkinter import ttk, messagebox, BooleanVar, StringVar
+from tkinter import ttk, messagebox, BooleanVar, StringVar, PhotoImage
 from battleship.logic import network
 from battleship.logic.ai import get_coords, surrounding, BotThread
+from battleship.resources import esc
+from PIL import Image, ImageTk
 import queue
 import asyncio
 
@@ -13,8 +15,12 @@ class ShipPlacementScreen:
 
         self.frame = ttk.Frame(self.root)
         self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
+
         self.message = StringVar()
         self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center', anchor='center')
+
+        self.return_label = ttk.Label(self.frame, text='Exit', justify='center', anchor='center', compound='left')
+
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', takefocus=False, command=self.random_place)
         self.clear_button = ttk.Button(self.frame, text='Clear', takefocus=False, command=self.clear)
@@ -44,7 +50,11 @@ class ShipPlacementScreen:
         self.place()
         self.root.update_idletasks()
 
-        self.message_label.configure(wraplength=self.frame.winfo_width() // 16 * 2)
+        image = Image.open(esc)
+        image = image.resize((30, 30), Image.ANTIALIAS)
+        self.image = ImageTk.PhotoImage(image)
+        self.return_label['image'] = self.image
+        self.message_label.configure(wraplength=self.frame.winfo_width() // 8)
 
     def ready(self):
         if self.is_ready.get():
@@ -107,6 +117,7 @@ class ShipPlacementScreen:
         self.clear_button.grid(column=12, row=4, columnspan=3)
         self.ready_check.grid(column=12, row=7, columnspan=3)
         self.message_label.grid(column=0, row=3, columnspan=5, rowspan=4)
+        self.return_label.grid(column=0, row=0, columnspan=2)
 
         self.field_frame.grid_propagate(False)
 
@@ -202,6 +213,8 @@ class GameScreen:
         self.player_label = ttk.Label(self.frame, text='')
         self.enemy_label = ttk.Label(self.frame, text='')
 
+        self.return_label = ttk.Label(self.frame, text='Exit', justify='center', anchor='center', compound='left')
+
         self.activity = StringVar()
         self.activity_label = ttk.Label(self.frame, textvariable=self.activity, justify='center', anchor='center')
 
@@ -248,6 +261,12 @@ class GameScreen:
 
         self.order()
         self.place()
+        self.root.update_idletasks()
+
+        image = Image.open(esc)
+        image = image.resize((30, 30), Image.ANTIALIAS)
+        self.image = ImageTk.PhotoImage(image)
+        self.return_label['image'] = self.image
 
     def return_to_main(self):
         self.root.game = None
@@ -352,6 +371,8 @@ class GameScreen:
 
         self.player_label.grid(column=1, row=8, columnspan=6, rowspan=1)
         self.enemy_label.grid(column=9, row=8, columnspan=6, rowspan=1)
+
+        self.return_label.grid(column=0, row=0, columnspan=2)
 
         self.activity_label.grid(column=5, row=0, columnspan=6, rowspan=2, sticky='nsew')
 
