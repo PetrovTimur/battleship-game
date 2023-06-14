@@ -1,8 +1,8 @@
-from tkinter import ttk, messagebox, BooleanVar, StringVar, Checkbutton, Toplevel
+from tkinter import ttk, BooleanVar, StringVar, Checkbutton, Toplevel
 from battleship.logic import network
 from battleship.logic.ai import get_coords, surrounding, BotThread
 from battleship.resources import esc
-from PIL import Image, ImageTk
+from battleship.util.image import loadImage
 import queue
 import asyncio
 
@@ -51,9 +51,7 @@ class ShipPlacementScreen:
         self.place()
         self.root.update_idletasks()
 
-        image = Image.open(esc)
-        image = image.resize((30, 30), Image.ANTIALIAS)
-        self.image = ImageTk.PhotoImage(image)
+        self.image = loadImage(esc, (30, 30))
         self.return_label['image'] = self.image
         self.message_label.configure(wraplength=self.frame.winfo_width() // 8)
 
@@ -271,9 +269,7 @@ class GameScreen:
         self.place()
         self.root.update_idletasks()
 
-        image = Image.open(esc)
-        image = image.resize((30, 30), Image.ANTIALIAS)
-        self.image = ImageTk.PhotoImage(image)
+        self.image = loadImage(esc, (30, 30))
         self.return_label['image'] = self.image
 
     def return_to_main(self):

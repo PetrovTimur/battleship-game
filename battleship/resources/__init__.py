@@ -11,3 +11,4 @@ IMGPATH = os.path.join(RSCPATH, 'images')
 
 config = setResource(PKGHOME, 'config.ini')
 esc = setResource(IMGPATH, 'escape.png')
+icon = setResource(IMGPATH, 'icon.png')

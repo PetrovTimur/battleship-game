@@ -2,7 +2,7 @@ from tkinter import StringVar, BooleanVar, Checkbutton
 from tkinter import ttk
 from battleship.logic.game import Game
 from battleship.resources import esc
-from PIL import Image, ImageTk
+from battleship.util.image import loadImage
 
 
 class StartScreen:
@@ -122,9 +122,7 @@ class SettingsScreen:
         self.place()
         self.root.update_idletasks()
 
-        image = Image.open(esc)
-        image = image.resize((30, 30), Image.ANTIALIAS)
-        self.image = ImageTk.PhotoImage(image)
+        self.image = loadImage(esc, (30, 30))
         self.return_label['image'] = self.image
 
     def set_fullscreen(self):
@@ -205,9 +203,7 @@ class NewGameSetupScreen:
         self.place()
         self.root.update_idletasks()
 
-        image = Image.open(esc)
-        image = image.resize((30, 30), Image.ANTIALIAS)
-        self.image = ImageTk.PhotoImage(image)
+        self.image = loadImage(esc, (30, 30))
         self.return_label['image'] = self.image
 
     def return_to_main(self):
