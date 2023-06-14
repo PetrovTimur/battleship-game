@@ -26,7 +26,10 @@ class AsyncioThread(threading.Thread):
         self.asyncio_loop.run_until_complete(self.play())
 
     async def connect(self):
-        self.reader, self.writer = await asyncio.open_connection(SERVER_IP, 8888)
+        try:
+            self.reader, self.writer = await asyncio.open_connection(SERVER_IP, 8888)
+        except ConnectionError:
+            self.status = False
 
     async def put_in_queue(self, data):
         await self.aqueue.put(data)
@@ -49,6 +52,10 @@ class AsyncioThread(threading.Thread):
 
     async def play(self):
         await self.connect()
+
+        if not self.status:
+            self.screen.connection_error()
+            return
 
         connected = False
 

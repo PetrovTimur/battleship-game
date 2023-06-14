@@ -169,11 +169,7 @@ class BotThread(threading.Thread):
                 while self.shoot():
                     continue
 
-        print('Closed')
-
 
 if __name__ == "__main__":
     import doctest
     doctest.testfile("ai_tests.txt")
-
-# TODO rework coords to prevent placing at already occupied and nearby spots

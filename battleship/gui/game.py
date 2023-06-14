@@ -14,7 +14,7 @@ class ShipPlacementScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
-        self.title = ttk.Label(self.frame, text='Ship placement', style='Big.Blue.TLabel')
+        self.title = ttk.Label(self.frame, text='Place your ships', style='Big.Blue.TLabel')
 
         self.message = StringVar()
         self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center', anchor='center', style='Blue.TLabel')
@@ -71,6 +71,12 @@ class ShipPlacementScreen:
                 asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
                                                  self.root.game.thread.asyncio_loop)
             self.root.game.thread = None
+
+    def connection_error(self):
+        self.root.game.queue = None
+        self.root.game.thread = None
+        self.is_ready.set(False)
+        self.message.set('Server is temporarily unavailable. Try later')
 
     def start_game(self):
         self.root.event_generate('<<Game>>')
