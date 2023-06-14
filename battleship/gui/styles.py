@@ -5,15 +5,9 @@ def initialize_styles():
     style = ttk.Style()
     style.theme_use('default')
 
-    style.configure('Big.TButton', font=('Sans', 12))
-
-    style.configure('Small.TButton', font=('Sans', 9))
-
-    style.configure('Blue.TFrame', background='#406D96')
-
-    style.configure('Blue.TButton', width=3)
-    style.map('Blue.TButton',
-              background=[('hover', '!disabled', 'pink'),
+    style.configure('Empty.TButton', width=3)
+    style.map('Empty.TButton',
+              background=[('hover', '!disabled', 'grey'),
                           ('!disabled', '#355C7D'),
                           ('disabled', '#26364a')])
 
@@ -33,8 +27,27 @@ def initialize_styles():
     style.map('Sank.TButton',
               background=[('disabled', 'red')])
 
-    style.configure('Big.TLabel', font=('Sans', 11))
+    style.configure('Blue.TButton')
+    style.map('Blue.TButton',
+              background=[('hover', '#6fa8dc'),
+                          ('!hover', '#9fc5e8')])
 
-    style.configure('Blue.TCheckbutton')
-    style.map('Blue.TCheckbutton',
+    style.configure('Big.Blue.TButton', font=('Sans', 12))
+    style.configure('Small.Blue.TButton', font=('Sans', 9))
+
+    style.configure('Blue.TFrame', background='#cfe2f3')
+    style.configure('Bluer.TFrame', background='#9fc5e8')
+
+    style.configure('Bluer.TLabel', background='#9fc5e8')
+
+    style.configure('Blue.TLabel', background='#cfe2f3')
+    style.configure('Big.Blue.TLabel', font=('Sans', 11))
+
+    style.configure('Blue.TMenubutton')
+    style.map('Blue.TMenubutton',
+              background=[('hover', '#6fa8dc'),
+                          ('!hover', '#cfe2f3')])
+
+    style.configure('Bluer.TCheckbutton')
+    style.map('Bluer.TCheckbutton',
               indicatorcolor=[('selected', 'black')])

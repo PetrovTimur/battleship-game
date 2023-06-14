@@ -1,4 +1,4 @@
-from tkinter import StringVar, BooleanVar
+from tkinter import StringVar, BooleanVar, Checkbutton
 from tkinter import ttk
 from battleship.logic.game import Game
 from battleship.resources import esc
@@ -9,8 +9,8 @@ class StartScreen:
     def __init__(self, window):
         self.root = window
 
-        self.frame = ttk.Frame(self.root)
-        self.title = ttk.Label(self.frame, text=f"Welcome, {self.root.appOpts['name']}!", style='Big.TLabel')
+        self.frame = ttk.Frame(self.root, style='Blue.TFrame')
+        self.title = ttk.Label(self.frame, text=f"Welcome, {self.root.appOpts['name']}!", style='Big.Blue.TLabel')
 
         self.buttonsConfig = [
             {
@@ -30,7 +30,7 @@ class StartScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.TButton', **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.Blue.TButton', **buttonConfig))
 
         self.place()
 
@@ -53,11 +53,11 @@ class SettingsScreen:
     def __init__(self, window):
         self.root = window
 
-        self.frame = ttk.Frame(self.root)
-        self.title = ttk.Label(self.frame, text='Settings', style='Big.TLabel')
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
+        self.frame = ttk.Frame(self.root, style='Blue.TFrame')
+        self.title = ttk.Label(self.frame, text='Settings', style='Big.Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
-        self.settings_frame = ttk.Frame(self.frame, style='Blue.TFrame')
+        self.settings_frame = ttk.Frame(self.frame, style='Bluer.TFrame', relief='groove')
 
         self.name = StringVar(self.settings_frame, self.root.appOpts['name'])
         self.name_entry = ttk.Entry(
@@ -72,15 +72,19 @@ class SettingsScreen:
             self.resolution,
             self.resolution.get(),
             *self.resolution_options,
+            style='Blue.TMenubutton',
             command=lambda res: self.root.geometry(res))
 
+        self.resolution_menu['menu'].config(bg='#cfe2f3', activebackground='#6fa8dc')
+
         self.fullscreen = BooleanVar(self.settings_frame, self.root.appOpts.getboolean('fullscreen'))
-        self.fullscreen_button = ttk.Checkbutton(
+        self.fullscreen_button = Checkbutton(
             self.settings_frame,
             variable=self.fullscreen,
             takefocus=False,
             command=self.set_fullscreen,
-            style='Blue.TCheckbutton')
+            background='#9fc5e8',
+            activebackground='#9fc5e8')
 
         self.language = StringVar(self.settings_frame, self.root.appOpts['language'])
         self.language_options = ['English', 'Русский']
@@ -89,7 +93,10 @@ class SettingsScreen:
             self.language,
             self.language.get(),
             *self.language_options,
+            style='Blue.TMenubutton',
             command=lambda lang: print('lang change'))
+
+        self.language_menu['menu'].config(bg='#cfe2f3', activebackground='#6fa8dc')
 
         self.labelsConfig = [
             {
@@ -108,7 +115,7 @@ class SettingsScreen:
         self.labels = []
 
         for labelConfig in self.labelsConfig:
-            self.labels.append(ttk.Label(self.settings_frame, **labelConfig))
+            self.labels.append(ttk.Label(self.settings_frame, style='Bluer.TLabel', **labelConfig))
 
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
@@ -173,10 +180,10 @@ class NewGameSetupScreen:
     def __init__(self, window):
         self.root = window
 
-        self.frame = ttk.Frame(self.root)
+        self.frame = ttk.Frame(self.root, style='Blue.TFrame')
 
-        self.title = ttk.Label(self.frame, text='Choose game mode', style='Big.TLabel')
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
+        self.title = ttk.Label(self.frame, text='Choose game mode', style='Big.Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
         self.buttonsConfig = [
             {
@@ -191,7 +198,7 @@ class NewGameSetupScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.TButton', **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.Blue.TButton', **buttonConfig))
 
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 

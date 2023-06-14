@@ -1,4 +1,4 @@
-from tkinter import ttk, messagebox, BooleanVar, StringVar, PhotoImage
+from tkinter import ttk, messagebox, BooleanVar, StringVar, Checkbutton
 from battleship.logic import network
 from battleship.logic.ai import get_coords, surrounding, BotThread
 from battleship.resources import esc
@@ -13,27 +13,28 @@ class ShipPlacementScreen:
     def __init__(self, window):
         self.root = window
 
-        self.frame = ttk.Frame(self.root)
-        self.title = ttk.Label(self.frame, text='Ship placement', style='Big.TLabel')
+        self.frame = ttk.Frame(self.root, style='Blue.TFrame')
+        self.title = ttk.Label(self.frame, text='Ship placement', style='Big.Blue.TLabel')
 
         self.message = StringVar()
-        self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center', anchor='center')
+        self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center', anchor='center', style='Blue.TLabel')
 
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
+        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
         self.field_frame = ttk.Frame(self.frame)
-        self.random_button = ttk.Button(self.frame, text='Random', takefocus=False, command=self.random_place, style='Small.TButton')
-        self.clear_button = ttk.Button(self.frame, text='Clear', takefocus=False, command=self.clear, style='Small.TButton')
+        self.random_button = ttk.Button(self.frame, text='Random', takefocus=False, command=self.random_place, style='Small.Blue.TButton')
+        self.clear_button = ttk.Button(self.frame, text='Clear', takefocus=False, command=self.clear, style='Small.Blue.TButton')
         self.is_ready = BooleanVar(value=False)
-        self.ready_check = ttk.Checkbutton(self.frame, text='Ready', takefocus=False,
-                                           state='disabled', command=self.ready,
-                                           variable=self.is_ready, onvalue=True, offvalue=False, style='Blue.TCheckbutton')
+        self.ready_check = Checkbutton(self.frame, text='Ready', takefocus=False,
+                                       state='disabled', command=self.ready,
+                                       variable=self.is_ready, onvalue=True, offvalue=False,
+                                       background='#cfe2f3', activebackground='#cfe2f3')
         self.field_buttons: list[list[ttk.Button]] = []
 
         for i in range(FIELD_SIZE):
             self.field_buttons.append([])
             for j in range(FIELD_SIZE):
-                self.field_buttons[i].append(ttk.Button(self.field_frame, takefocus=False, style='Blue.TButton'))
+                self.field_buttons[i].append(ttk.Button(self.field_frame, takefocus=False, style='Empty.TButton'))
                 self.field_buttons[i][j].bind('<Enter>', lambda e, col=i, row=j: self.hover((col, row)))
                 self.field_buttons[i][j].bind('<Leave>', lambda e, col=i, row=j: self.leave((col, row)))
 
@@ -89,21 +90,21 @@ class ShipPlacementScreen:
         for i in range(FIELD_SIZE):
             for j in range(FIELD_SIZE):
                 self.field_buttons[i][j]['style'] = 'Ship.TButton' \
-                    if self.root.game.me.field.cells[i][j] > 0 else 'Blue.TButton'
+                    if self.root.game.me.field.cells[i][j] > 0 else 'Empty.TButton'
                 self.field_buttons[i][j].state(['disabled'])
 
-        self.ready_check.state(['!disabled'])
+        self.ready_check.configure(state='normal')
 
     def clear(self):
         self.root.game.me.field.clear()
 
         for i in range(FIELD_SIZE):
             for j in range(FIELD_SIZE):
-                self.field_buttons[i][j]['style'] = 'Blue.TButton'
+                self.field_buttons[i][j]['style'] = 'Empty.TButton'
                 self.field_buttons[i][j].state(['!disabled'])
 
         self.is_ready.set(False)
-        self.ready_check.state(['disabled'])
+        self.ready_check.configure(state='disabled')
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')
@@ -155,6 +156,7 @@ class ShipPlacementScreen:
 
             coords = get_coords(pos, size, self.angle, self.root.game.me.field.cells)
             if len(coords) < size:
+                self.message.set('')
                 return
 
             for col, row in coords:
@@ -193,7 +195,7 @@ class ShipPlacementScreen:
 
         if self.root.game.me.field.check_placed():
             self.update_field()
-            self.ready_check.state(['!disabled'])
+            self.ready_check.configure(state='normal')
 
     def update_field(self):
         for i in range(FIELD_SIZE):
@@ -208,18 +210,18 @@ class GameScreen:
     def __init__(self, window):
         self.root = window
 
-        self.frame = ttk.Frame(self.root)
+        self.frame = ttk.Frame(self.root, style='Blue.TFrame')
 
-        self.player_label = ttk.Label(self.frame, text='')
-        self.enemy_label = ttk.Label(self.frame, text='')
+        self.player_label = ttk.Label(self.frame, text='', style='Blue.TLabel')
+        self.enemy_label = ttk.Label(self.frame, text='', style='Blue.TLabel')
 
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
+        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
         self.activity = StringVar()
-        self.activity_label = ttk.Label(self.frame, textvariable=self.activity, justify='center', anchor='center')
+        self.activity_label = ttk.Label(self.frame, textvariable=self.activity, justify='center', anchor='center', style='Blue.TLabel')
 
-        self.player_field = ttk.Frame(self.frame)
-        self.enemy_field = ttk.Frame(self.frame)
+        self.player_field = ttk.Frame(self.frame, style='Blue.TFrame')
+        self.enemy_field = ttk.Frame(self.frame, style='Blue.TFrame')
         self.player_buttons: list[list[ttk.Button]] = []
         self.enemy_buttons: list[list[ttk.Button]] = []
         self.player_row_labels: list[ttk.Label] = []
@@ -230,16 +232,16 @@ class GameScreen:
         for i in range(FIELD_SIZE):
             self.player_buttons.append([])
             self.enemy_buttons.append([])
-            self.player_row_labels.append(ttk.Label(self.player_field, text=str(i + 1), width=3, anchor='center'))
-            self.player_col_labels.append(ttk.Label(self.player_field, text=chr(ord('A') + i), width=3, anchor='center'))
-            self.enemy_row_labels.append(ttk.Label(self.enemy_field, text=str(i + 1), width=3, anchor='center'))
-            self.enemy_col_labels.append(ttk.Label(self.enemy_field, text=chr(ord('A') + i), width=3, anchor='center'))
+            self.player_row_labels.append(ttk.Label(self.player_field, text=str(i + 1), width=3, anchor='center', style='Blue.TLabel'))
+            self.player_col_labels.append(ttk.Label(self.player_field, text=chr(ord('A') + i), width=3, anchor='center', style='Blue.TLabel'))
+            self.enemy_row_labels.append(ttk.Label(self.enemy_field, text=str(i + 1), width=3, anchor='center', style='Blue.TLabel'))
+            self.enemy_col_labels.append(ttk.Label(self.enemy_field, text=chr(ord('A') + i), width=3, anchor='center', style='Blue.TLabel'))
             for j in range(FIELD_SIZE):
-                self.player_buttons[i].append(ttk.Button(self.player_field, takefocus=False, style='Blue.TButton'))
-                self.enemy_buttons[i].append(ttk.Button(self.enemy_field, takefocus=False, style='Blue.TButton'))
+                self.player_buttons[i].append(ttk.Button(self.player_field, takefocus=False, style='Empty.TButton'))
+                self.enemy_buttons[i].append(ttk.Button(self.enemy_field, takefocus=False, style='Empty.TButton'))
 
                 self.player_buttons[i][j]['style'] = 'Ship.TButton' \
-                    if self.root.game.me.field.cells[i][j] > 0 else 'Blue.TButton'
+                    if self.root.game.me.field.cells[i][j] > 0 else 'Empty.TButton'
                 self.player_buttons[i][j].state(['disabled'])
 
                 self.enemy_buttons[i][j].configure(command=lambda col=i, row=j: self.player_turn((col, row)))
@@ -325,7 +327,7 @@ class GameScreen:
             self.player_buttons[col][row]['style'] = 'Miss.TButton'
             for i in range(FIELD_SIZE):
                 for j in range(FIELD_SIZE):
-                    if self.enemy_buttons[i][j]['style'] == 'Blue.TButton':
+                    if self.enemy_buttons[i][j]['style'] == 'Empty.TButton':
                         self.enemy_buttons[i][j].state(['!disabled'])
 
         return status
@@ -350,7 +352,7 @@ class GameScreen:
             if status == 'dead':
                 for i in range(FIELD_SIZE):
                     for j in range(FIELD_SIZE):
-                        if self.enemy_buttons[i][j]['style'] == 'Blue.TButton':
+                        if self.enemy_buttons[i][j]['style'] == 'Empty.TButton':
                             self.enemy_buttons[i][j].state(['disabled'])
 
                 self.game_over()
@@ -358,7 +360,7 @@ class GameScreen:
             self.enemy_buttons[col][row]['style'] = 'Miss.TButton'
             for i in range(FIELD_SIZE):
                 for j in range(FIELD_SIZE):
-                    if self.enemy_buttons[i][j]['style'] == 'Blue.TButton':
+                    if self.enemy_buttons[i][j]['style'] == 'Empty.TButton':
                         self.enemy_buttons[i][j].state(['disabled'])
 
         self.enemy_buttons[col][row].state(['disabled'])
