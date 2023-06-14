@@ -10,7 +10,7 @@ class StartScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root)
-        self.title = ttk.Label(self.frame, text=f"Welcome, {self.root.appOpts['name']}!")
+        self.title = ttk.Label(self.frame, text=f"Welcome, {self.root.appOpts['name']}!", style='Big.TLabel')
 
         self.buttonsConfig = [
             {
@@ -30,7 +30,7 @@ class StartScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, takefocus=False, **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.TButton', **buttonConfig))
 
         self.place()
 
@@ -54,7 +54,7 @@ class SettingsScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root)
-        self.title = ttk.Label(self.frame, text='Settings')
+        self.title = ttk.Label(self.frame, text='Settings', style='Big.TLabel')
         self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
 
         self.settings_frame = ttk.Frame(self.frame, style='Blue.TFrame')
@@ -175,7 +175,7 @@ class NewGameSetupScreen:
 
         self.frame = ttk.Frame(self.root)
 
-        self.title = ttk.Label(self.frame, text='New Game')
+        self.title = ttk.Label(self.frame, text='Choose game mode', style='Big.TLabel')
         self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
 
         self.buttonsConfig = [
@@ -191,7 +191,7 @@ class NewGameSetupScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, takefocus=False, **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.TButton', **buttonConfig))
 
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 

@@ -5,6 +5,10 @@ def initialize_styles():
     style = ttk.Style()
     style.theme_use('default')
 
+    style.configure('Big.TButton', font=('Sans', 12))
+
+    style.configure('Small.TButton', font=('Sans', 9))
+
     style.configure('Blue.TFrame', background='#406D96')
 
     style.configure('Blue.TButton', width=3)
@@ -29,7 +33,7 @@ def initialize_styles():
     style.map('Sank.TButton',
               background=[('disabled', 'red')])
 
-    style.configure('Red.TLabel', background='red')
+    style.configure('Big.TLabel', font=('Sans', 11))
 
     style.configure('Blue.TCheckbutton')
     style.map('Blue.TCheckbutton',

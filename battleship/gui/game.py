@@ -14,7 +14,7 @@ class ShipPlacementScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root)
-        self.title = ttk.Label(self.frame, text='Ship placement', style='Red.TLabel')
+        self.title = ttk.Label(self.frame, text='Ship placement', style='Big.TLabel')
 
         self.message = StringVar()
         self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center', anchor='center')
@@ -22,8 +22,8 @@ class ShipPlacementScreen:
         self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
 
         self.field_frame = ttk.Frame(self.frame)
-        self.random_button = ttk.Button(self.frame, text='Random', takefocus=False, command=self.random_place)
-        self.clear_button = ttk.Button(self.frame, text='Clear', takefocus=False, command=self.clear)
+        self.random_button = ttk.Button(self.frame, text='Random', takefocus=False, command=self.random_place, style='Small.TButton')
+        self.clear_button = ttk.Button(self.frame, text='Clear', takefocus=False, command=self.clear, style='Small.TButton')
         self.is_ready = BooleanVar(value=False)
         self.ready_check = ttk.Checkbutton(self.frame, text='Ready', takefocus=False,
                                            state='disabled', command=self.ready,
@@ -257,7 +257,7 @@ class GameScreen:
         self.player_label['text'] = self.root.game.me.name
         self.enemy_label['text'] = self.root.game.enemy.name
 
-        self.activity.set(f'Game between {self.root.game.me.name!r} and {self.root.game.enemy.name!r} starts...')
+        self.activity.set(f'{self.root.game.me.name!r} vs {self.root.game.enemy.name!r}')
 
         self.order()
         self.place()
@@ -296,8 +296,8 @@ class GameScreen:
     def update_activity(self, coord, player, status):
         col, row = coord
         coord = chr(ord('A') + col) + str(10 - row)
-        self.activity.set(f'{player} shoots at {coord}\n'
-                          f'result: {status}')
+        self.activity.set(f'{player!r} shoots at {coord}\n'
+                          f'{status}')
 
     def game_over(self):
         if self.root.game.mode == 'online':
