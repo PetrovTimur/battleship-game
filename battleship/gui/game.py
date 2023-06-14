@@ -19,7 +19,7 @@ class ShipPlacementScreen:
         self.message = StringVar()
         self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center', anchor='center')
 
-        self.return_label = ttk.Label(self.frame, text='Exit', justify='center', anchor='center', compound='left')
+        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
 
         self.field_frame = ttk.Frame(self.frame)
         self.random_button = ttk.Button(self.frame, text='Random', takefocus=False, command=self.random_place)
@@ -213,7 +213,7 @@ class GameScreen:
         self.player_label = ttk.Label(self.frame, text='')
         self.enemy_label = ttk.Label(self.frame, text='')
 
-        self.return_label = ttk.Label(self.frame, text='Exit', justify='center', anchor='center', compound='left')
+        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
 
         self.activity = StringVar()
         self.activity_label = ttk.Label(self.frame, textvariable=self.activity, justify='center', anchor='center')

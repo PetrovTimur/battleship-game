@@ -1,6 +1,8 @@
 from tkinter import StringVar, BooleanVar
 from tkinter import ttk
 from battleship.logic.game import Game
+from battleship.resources import esc
+from PIL import Image, ImageTk
 
 
 class StartScreen:
@@ -20,7 +22,7 @@ class StartScreen:
                 "command": lambda: self.root.event_generate('<<Settings>>'),
             },
             {
-                "text": "Quit",
+                "text": "Exit",
                 "command": self.root.destroy
             },
         ]
@@ -34,13 +36,14 @@ class StartScreen:
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')
-        self.frame.rowconfigure((0, 1, 2, 3, 4), weight=1)
-        self.frame.columnconfigure((0, 1, 2), weight=1)
+        self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
+        self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
+                                   weight=1, minsize=40)
 
-        self.title.grid(column=0, row=0, columnspan=3)
+        self.title.grid(column=5, row=0, columnspan=6, rowspan=2)
 
         for i in range(len(self.buttons)):
-            self.buttons[i].grid(column=1, row=(i + 1), sticky='nsew')
+            self.buttons[i].grid(column=5, row=2 * (i + 1), columnspan=6, rowspan=2, sticky='nsew')
 
     def destroy(self):
         self.frame.destroy()
@@ -52,6 +55,7 @@ class SettingsScreen:
 
         self.frame = ttk.Frame(self.root)
         self.title = ttk.Label(self.frame, text='Settings')
+        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
 
         self.settings_frame = ttk.Frame(self.frame, style='Blue.TFrame')
 
@@ -109,6 +113,12 @@ class SettingsScreen:
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
         self.place()
+        self.root.update_idletasks()
+
+        image = Image.open(esc)
+        image = image.resize((30, 30), Image.ANTIALIAS)
+        self.image = ImageTk.PhotoImage(image)
+        self.return_label['image'] = self.image
 
     def set_fullscreen(self):
         if self.fullscreen.get():
@@ -136,12 +146,14 @@ class SettingsScreen:
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')
-        self.frame.rowconfigure((0, 1, 2, 3), weight=1)
-        self.frame.columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
+        self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
+        self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
+                                   weight=1, minsize=40)
 
-        self.title.grid(column=1, row=0, columnspan=4)
+        self.title.grid(column=5, row=0, columnspan=6, rowspan=2)
+        self.return_label.grid(column=0, row=0, columnspan=2)
 
-        self.settings_frame.grid(column=1, row=1, columnspan=4, rowspan=2, sticky='nsew')
+        self.settings_frame.grid(column=3, row=2, columnspan=10, rowspan=6, sticky='nsew')
         self.settings_frame.rowconfigure((0, 1, 2, 3), weight=1)
         self.settings_frame.columnconfigure((0, 1, 2, 3), weight=1)
 
@@ -164,6 +176,7 @@ class NewGameSetupScreen:
         self.frame = ttk.Frame(self.root)
 
         self.title = ttk.Label(self.frame, text='New Game')
+        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left')
 
         self.buttonsConfig = [
             {
@@ -183,6 +196,12 @@ class NewGameSetupScreen:
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
         self.place()
+        self.root.update_idletasks()
+
+        image = Image.open(esc)
+        image = image.resize((30, 30), Image.ANTIALIAS)
+        self.image = ImageTk.PhotoImage(image)
+        self.return_label['image'] = self.image
 
     def return_to_main(self):
         self.root.unbind('<Escape>')
@@ -197,13 +216,15 @@ class NewGameSetupScreen:
 
     def place(self):
         self.frame.grid(column=0, row=0, sticky='nsew')
-        self.frame.rowconfigure((0, 1, 2, 3, 4), weight=1)
-        self.frame.columnconfigure((0, 1, 2, 3), weight=1)
+        self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
+        self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
+                                   weight=1, minsize=40)
 
-        self.title.grid(column=1, row=1, columnspan=2)
+        self.title.grid(column=5, row=0, columnspan=6, rowspan=2)
+        self.return_label.grid(column=0, row=0, columnspan=2)
 
         for i in range(len(self.buttons)):
-            self.buttons[i].grid(column=(i + 1), row=2, sticky='nsew')
+            self.buttons[i].grid(column=(5 * i + 3), row=3, columnspan=5, rowspan=2, sticky='nsew')
 
     def destroy(self):
         self.frame.destroy()
