@@ -1,4 +1,4 @@
-from tkinter import ttk, messagebox, BooleanVar, StringVar, Checkbutton
+from tkinter import ttk, messagebox, BooleanVar, StringVar, Checkbutton, Toplevel
 from battleship.logic import network
 from battleship.logic.ai import get_coords, surrounding, BotThread
 from battleship.resources import esc
@@ -276,17 +276,70 @@ class GameScreen:
         self.root.event_generate('<<Main>>')
 
     def quit(self):
-        response = messagebox.askyesno(message='Quit to main?')
-        if response:
-            if self.root.game.mode == 'online':
-                asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
-                                                 self.root.game.thread.asyncio_loop)
-            else:
-                self.queue.put('quit')
-            self.return_to_main()
+        win = Toplevel()
+        win.resizable(False, False)
+        w = 200
+        h = 100
+        xs = self.root.winfo_rootx()
+        ys = self.root.winfo_rooty()
+        ws = self.root.winfo_width()
+        hs = self.root.winfo_height()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        win.geometry('%dx%d+%d+%d' % (w, h, xs + x, ys + y))
+
+        win.title('Warning')
+        win.rowconfigure((0, 1, 2, 3), weight=1)
+        win.columnconfigure((0, 1), weight=1)
+
+        question_label = ttk.Label(win, text='Quit to main?')
+        question_label.grid(column=0, row=0, columnspan=2, rowspan=2)
+
+        yes_button = ttk.Button(win, text='Yes', takefocus=False, command=lambda window=win: self.handle_quit(window))
+        no_button = ttk.Button(win, text='No', takefocus=False, command=win.destroy)
+        yes_button.grid(column=0, row=2, rowspan=2)
+        no_button.grid(column=1, row=2, rowspan=2)
+
+        win.grab_set()
+
+    def handle_quit(self, w):
+        w.destroy()
+        if self.root.game.mode == 'online':
+            asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
+                                             self.root.game.thread.asyncio_loop)
+        else:
+            self.queue.put('quit')
+        self.return_to_main()
 
     def handle_connection_error(self):
-        messagebox.showinfo(message='Opponent quit')
+        win = Toplevel()
+        win.resizable(False, False)
+        w = 200
+        h = 100
+        xs = self.root.winfo_rootx()
+        ys = self.root.winfo_rooty()
+        ws = self.root.winfo_width()
+        hs = self.root.winfo_height()
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+        win.geometry('%dx%d+%d+%d' % (w, h, xs + x, ys + y))
+
+        win.title('Warning')
+        win.rowconfigure((0, 1, 2, 3), weight=1)
+        win.columnconfigure((0, 1), weight=1)
+
+        question_label = ttk.Label(win, text='Connection lost')
+        question_label.grid(column=0, row=0, columnspan=2, rowspan=2)
+
+        ok_button = ttk.Button(win, text='Ok', takefocus=False, command=lambda window=win: self.handle_error(window))
+        ok_button.grid(column=0, row=2, rowspan=2, columnspan=2)
+
+        win.protocol("WM_DELETE_WINDOW", lambda window=win: self.handle_error(window))
+
+        win.grab_set()
+
+    def handle_error(self, w):
+        w.destroy()
         self.return_to_main()
 
     def order(self):
