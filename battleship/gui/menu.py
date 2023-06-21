@@ -107,7 +107,7 @@ class SettingsScreen:
                 "text": _("Resolution")
             },
             {
-                "text": _("Fullscreen")
+                "text": _("Fullscreen mode")
             },
             {
                 "text": _("Language")
@@ -168,13 +168,13 @@ class SettingsScreen:
         self.settings_frame.rowconfigure((0, 1, 2, 3), weight=1)
         self.settings_frame.columnconfigure((0, 1, 2, 3), weight=1)
 
-        self.name_entry.grid(column=3, row=0)
-        self.resolution_menu.grid(column=3, row=1)
-        self.fullscreen_button.grid(column=3, row=2)
-        self.language_menu.grid(column=3, row=3)
+        self.name_entry.grid(column=3, row=0, columnspan=2)
+        self.resolution_menu.grid(column=3, row=1, columnspan=2)
+        self.fullscreen_button.grid(column=3, row=2, columnspan=2)
+        self.language_menu.grid(column=3, row=3, columnspan=2)
 
         for i in range(len(self.labels)):
-            self.labels[i].grid(column=0, row=i)
+            self.labels[i].grid(column=0, row=i, columnspan=2)
 
     def destroy(self):
         self.frame.destroy()
@@ -186,16 +186,16 @@ class NewGameSetupScreen:
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
 
-        self.title = ttk.Label(self.frame, text='Choose game mode', style='Big.Blue.TLabel')
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.title = ttk.Label(self.frame, text=_('Choose game mode'), style='Big.Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
         self.buttonsConfig = [
             {
-                "text": "Single",
+                "text": _("Single"),
                 "command": lambda: self.start_game('single'),
             },
             {
-                "text": "Online",
+                "text": _("Online"),
                 "command": lambda: self.start_game('online'),
             }]
 
