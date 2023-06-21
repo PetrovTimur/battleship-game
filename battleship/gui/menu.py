@@ -55,8 +55,8 @@ class SettingsScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
-        self.title = ttk.Label(self.frame, text='Settings', style='Big.Blue.TLabel')
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.title = ttk.Label(self.frame, text=_('Settings'), style='Big.Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
         self.settings_frame = ttk.Frame(self.frame, style='Bluer.TFrame', relief='groove')
 
@@ -101,16 +101,16 @@ class SettingsScreen:
 
         self.labelsConfig = [
             {
-                "text": "Name"
+                "text": _("Name")
             },
             {
-                "text": "Resolution"
+                "text": _("Resolution")
             },
             {
-                "text": "Fullscreen"
+                "text": _("Fullscreen")
             },
             {
-                "text": "Language"
+                "text": _("Language")
             }]
 
         self.labels = []
