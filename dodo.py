@@ -2,8 +2,9 @@
 
 import glob
 from doit.tools import create_folder
+from doit import create_after
 
-# DOIT_CONFIG = {'default_tasks': ['all']}
+DOIT_CONFIG = {'default_tasks': ['test']}
 
 
 def task_test():
@@ -43,11 +44,12 @@ def task_mo():
            }
 
 
+@create_after(executed='mo')
 def task_app():
     """Run application."""
-    import battleship
+    from battleship import main
     return {
-            'actions': [battleship.main],
+            'actions': [main],
             'task_dep': ['mo'],
            }
 
