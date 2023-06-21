@@ -168,8 +168,3 @@ class BotThread(threading.Thread):
 
                 while self.shoot():
                     continue
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testfile("ai_tests.txt")
