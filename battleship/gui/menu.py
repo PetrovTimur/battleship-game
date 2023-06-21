@@ -3,6 +3,7 @@ from tkinter import ttk
 from battleship.logic.game import Game
 from battleship.resources import esc
 from battleship.util.image import loadImage
+from battleship.translation import _, setLang
 
 
 class StartScreen:
@@ -10,19 +11,19 @@ class StartScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
-        self.title = ttk.Label(self.frame, text=f"Welcome, {self.root.appOpts['name']}!", style='Big.Blue.TLabel')
+        self.title = ttk.Label(self.frame, text=_('Welcome, {name}!').format(name=self.root.appOpts['name']), style='Big.Blue.TLabel')
 
         self.buttonsConfig = [
             {
-                "text": "New Game",
+                "text": _("New Game"),
                 "command": lambda: self.root.event_generate('<<NewGame>>'),
             },
             {
-                "text": "Settings",
+                "text": _("Settings"),
                 "command": lambda: self.root.event_generate('<<Settings>>'),
             },
             {
-                "text": "Exit",
+                "text": _("Exit"),
                 "command": self.root.destroy
             },
         ]
@@ -94,7 +95,7 @@ class SettingsScreen:
             self.language.get(),
             *self.language_options,
             style='Blue.TMenubutton',
-            command=lambda lang: print('lang change'))
+            command=lambda lang: self.set_language())
 
         self.language_menu['menu'].config(bg='#cfe2f3', activebackground='#6fa8dc')
 
@@ -134,6 +135,11 @@ class SettingsScreen:
             self.root.attributes('-fullscreen', True)
         else:
             self.root.attributes('-fullscreen', False)
+
+    def set_language(self):
+        self.root.appOpts['language'] = self.language.get()
+        setLang(self.root.appOpts["language"])
+        self.root.event_generate('<<Settings>>')
 
     def return_to_main(self):
         self.root.unbind('<Escape>')
