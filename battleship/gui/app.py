@@ -5,6 +5,7 @@ from battleship.util import Config
 from battleship.util.image import loadImage
 from battleship.resources import icon
 from .styles import initialize_styles
+from battleship.translation import _, setLang
 
 
 class App(Tk):
@@ -18,6 +19,7 @@ class App(Tk):
         self.rowconfigure(0, weight=1)
 
         self.appOpts = Config.get()
+        setLang(self.appOpts["language"])
 
         self.icon = loadImage(icon, (64, 64))
         self.iconphoto(True, self.icon)

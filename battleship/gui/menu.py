@@ -3,6 +3,7 @@ from tkinter import ttk
 from battleship.logic.game import Game
 from battleship.resources import esc
 from battleship.util.image import loadImage
+from battleship.translation import _, setLang
 
 
 class StartScreen:
@@ -10,19 +11,19 @@ class StartScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
-        self.title = ttk.Label(self.frame, text=f"Welcome, {self.root.appOpts['name']}!", style='Big.Blue.TLabel')
+        self.title = ttk.Label(self.frame, text=_('Welcome, {name}!').format(name=self.root.appOpts['name']), style='Big.Blue.TLabel')
 
         self.buttonsConfig = [
             {
-                "text": "New Game",
+                "text": _("New Game"),
                 "command": lambda: self.root.event_generate('<<NewGame>>'),
             },
             {
-                "text": "Settings",
+                "text": _("Settings"),
                 "command": lambda: self.root.event_generate('<<Settings>>'),
             },
             {
-                "text": "Exit",
+                "text": _("Exit"),
                 "command": self.root.destroy
             },
         ]
@@ -54,8 +55,8 @@ class SettingsScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
-        self.title = ttk.Label(self.frame, text='Settings', style='Big.Blue.TLabel')
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.title = ttk.Label(self.frame, text=_('Settings'), style='Big.Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
         self.settings_frame = ttk.Frame(self.frame, style='Bluer.TFrame', relief='groove')
 
@@ -94,22 +95,22 @@ class SettingsScreen:
             self.language.get(),
             *self.language_options,
             style='Blue.TMenubutton',
-            command=lambda lang: print('lang change'))
+            command=lambda lang: self.set_language())
 
         self.language_menu['menu'].config(bg='#cfe2f3', activebackground='#6fa8dc')
 
         self.labelsConfig = [
             {
-                "text": "Name"
+                "text": _("Name")
             },
             {
-                "text": "Resolution"
+                "text": _("Resolution")
             },
             {
-                "text": "Fullscreen"
+                "text": _("Fullscreen mode")
             },
             {
-                "text": "Language"
+                "text": _("Language")
             }]
 
         self.labels = []
@@ -134,6 +135,11 @@ class SettingsScreen:
             self.root.attributes('-fullscreen', True)
         else:
             self.root.attributes('-fullscreen', False)
+
+    def set_language(self):
+        self.root.appOpts['language'] = self.language.get()
+        setLang(self.root.appOpts["language"])
+        self.root.event_generate('<<Settings>>')
 
     def return_to_main(self):
         self.root.unbind('<Escape>')
@@ -162,13 +168,13 @@ class SettingsScreen:
         self.settings_frame.rowconfigure((0, 1, 2, 3), weight=1)
         self.settings_frame.columnconfigure((0, 1, 2, 3), weight=1)
 
-        self.name_entry.grid(column=3, row=0)
-        self.resolution_menu.grid(column=3, row=1)
-        self.fullscreen_button.grid(column=3, row=2)
-        self.language_menu.grid(column=3, row=3)
+        self.name_entry.grid(column=3, row=0, columnspan=2)
+        self.resolution_menu.grid(column=3, row=1, columnspan=2)
+        self.fullscreen_button.grid(column=3, row=2, columnspan=2)
+        self.language_menu.grid(column=3, row=3, columnspan=2)
 
         for i in range(len(self.labels)):
-            self.labels[i].grid(column=0, row=i)
+            self.labels[i].grid(column=0, row=i, columnspan=2)
 
     def destroy(self):
         self.frame.destroy()
@@ -180,16 +186,16 @@ class NewGameSetupScreen:
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
 
-        self.title = ttk.Label(self.frame, text='Choose game mode', style='Big.Blue.TLabel')
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.title = ttk.Label(self.frame, text=_('Choose game mode'), style='Big.Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
         self.buttonsConfig = [
             {
-                "text": "Single",
+                "text": _("Single"),
                 "command": lambda: self.start_game('single'),
             },
             {
-                "text": "Online",
+                "text": _("Online"),
                 "command": lambda: self.start_game('online'),
             }]
 
