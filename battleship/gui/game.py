@@ -3,7 +3,7 @@ from battleship.logic import network
 from battleship.logic.ai import get_coords, surrounding, BotThread
 from battleship.resources import esc
 from battleship.util.image import loadImage
-from battleship.translation import _, setLang
+from battleship.translation import _
 import queue
 import asyncio
 
@@ -220,7 +220,7 @@ class GameScreen:
         self.player_label = ttk.Label(self.frame, text='', style='Blue.TLabel')
         self.enemy_label = ttk.Label(self.frame, text='', style='Blue.TLabel')
 
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
         self.activity = StringVar()
         self.activity_label = ttk.Label(self.frame, textvariable=self.activity, justify='center', anchor='center', style='Blue.TLabel')
@@ -238,9 +238,9 @@ class GameScreen:
             self.player_buttons.append([])
             self.enemy_buttons.append([])
             self.player_row_labels.append(ttk.Label(self.player_field, text=str(i + 1), width=3, anchor='center', style='Blue.TLabel'))
-            self.player_col_labels.append(ttk.Label(self.player_field, text=chr(ord('A') + i), width=3, anchor='center', style='Blue.TLabel'))
+            self.player_col_labels.append(ttk.Label(self.player_field, text=chr(ord(_('A')) + i), width=3, anchor='center', style='Blue.TLabel'))
             self.enemy_row_labels.append(ttk.Label(self.enemy_field, text=str(i + 1), width=3, anchor='center', style='Blue.TLabel'))
-            self.enemy_col_labels.append(ttk.Label(self.enemy_field, text=chr(ord('A') + i), width=3, anchor='center', style='Blue.TLabel'))
+            self.enemy_col_labels.append(ttk.Label(self.enemy_field, text=chr(ord(_('A')) + i), width=3, anchor='center', style='Blue.TLabel'))
             for j in range(FIELD_SIZE):
                 self.player_buttons[i].append(ttk.Button(self.player_field, takefocus=False, style='Empty.TButton'))
                 self.enemy_buttons[i].append(ttk.Button(self.enemy_field, takefocus=False, style='Empty.TButton'))
@@ -264,7 +264,7 @@ class GameScreen:
         self.player_label['text'] = self.root.game.me.name
         self.enemy_label['text'] = self.root.game.enemy.name
 
-        self.activity.set(f'{self.root.game.me.name!r} vs {self.root.game.enemy.name!r}')
+        self.activity.set('{me!r} vs {enemy!r}'.format(me=self.root.game.me.name, enemy=self.root.game.enemy.name))
 
         self.order()
         self.place()
@@ -291,15 +291,15 @@ class GameScreen:
         y = (hs / 2) - (h / 2)
         win.geometry('%dx%d+%d+%d' % (w, h, xs + x, ys + y))
 
-        win.title('Warning')
+        win.title(_('Warning'))
         win.rowconfigure((0, 1, 2, 3), weight=1)
         win.columnconfigure((0, 1), weight=1)
 
-        question_label = ttk.Label(win, text='Quit to main?')
+        question_label = ttk.Label(win, text=_('Quit to main?'))
         question_label.grid(column=0, row=0, columnspan=2, rowspan=2)
 
-        yes_button = ttk.Button(win, text='Yes', takefocus=False, command=lambda window=win: self.handle_quit(window))
-        no_button = ttk.Button(win, text='No', takefocus=False, command=win.destroy)
+        yes_button = ttk.Button(win, text=_('Yes'), takefocus=False, command=lambda window=win: self.handle_quit(window))
+        no_button = ttk.Button(win, text=_('No'), takefocus=False, command=win.destroy)
         yes_button.grid(column=0, row=2, rowspan=2)
         no_button.grid(column=1, row=2, rowspan=2)
 
@@ -327,14 +327,14 @@ class GameScreen:
         y = (hs / 2) - (h / 2)
         win.geometry('%dx%d+%d+%d' % (w, h, xs + x, ys + y))
 
-        win.title('Warning')
+        win.title(_('Warning'))
         win.rowconfigure((0, 1, 2, 3), weight=1)
         win.columnconfigure((0, 1), weight=1)
 
-        question_label = ttk.Label(win, text='Connection lost')
+        question_label = ttk.Label(win, text=_('Connection lost'))
         question_label.grid(column=0, row=0, columnspan=2, rowspan=2)
 
-        ok_button = ttk.Button(win, text='Ok', takefocus=False, command=lambda window=win: self.handle_error(window))
+        ok_button = ttk.Button(win, text=_('Ok'), takefocus=False, command=lambda window=win: self.handle_error(window))
         ok_button.grid(column=0, row=2, rowspan=2, columnspan=2)
 
         win.protocol("WM_DELETE_WINDOW", lambda window=win: self.handle_error(window))
@@ -353,9 +353,21 @@ class GameScreen:
 
     def update_activity(self, coord, player, status):
         col, row = coord
-        coord = chr(ord('A') + col) + str(10 - row)
-        self.activity.set(f'{player!r} shoots at {coord}\n'
-                          f'{status}')
+        coord = chr(ord(_('A')) + col) + str(10 - row)
+
+        if status == 'dead':
+            if player == self.root.game.me.name:
+                status = 'win'
+            else:
+                status = 'loss'
+        statuses = {
+            'miss': _('miss'),
+            'hit': _('hit'),
+            'sank': _('sank'),
+            'win': _('You won!'),
+            'loss': _('You lost!')
+        }
+        self.activity.set(_('{player!r} shoots at {coord}\n{status}').format(player=player, coord=coord, status=statuses[status]))
 
     def game_over(self):
         if self.root.game.mode == 'online':

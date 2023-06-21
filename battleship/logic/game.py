@@ -1,4 +1,5 @@
 from .ai import random_ships, random_ships_matrix
+from battleship.translation import _
 
 FIELD_SIZE = 10
 TOTAL_SHIPS = 10
@@ -107,7 +108,7 @@ class Player:
 
 class Bot(Player):
     def __init__(self):
-        super().__init__('AI')
+        super().__init__(_('AI'))
         self.field.auto_place()
 
 
