@@ -3,6 +3,7 @@ from battleship.logic import network
 from battleship.logic.ai import get_coords, surrounding, BotThread
 from battleship.resources import esc
 from battleship.util.image import loadImage
+from battleship.translation import _, setLang
 import queue
 import asyncio
 
@@ -14,18 +15,18 @@ class ShipPlacementScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
-        self.title = ttk.Label(self.frame, text='Place your ships', style='Big.Blue.TLabel')
+        self.title = ttk.Label(self.frame, text=_('Place your ships'), style='Big.Blue.TLabel')
 
         self.message = StringVar()
         self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center', anchor='center', style='Blue.TLabel')
 
-        self.return_label = ttk.Label(self.frame, text='Return', justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
 
         self.field_frame = ttk.Frame(self.frame)
-        self.random_button = ttk.Button(self.frame, text='Random', takefocus=False, command=self.random_place, style='Small.Blue.TButton')
-        self.clear_button = ttk.Button(self.frame, text='Clear', takefocus=False, command=self.clear, style='Small.Blue.TButton')
+        self.random_button = ttk.Button(self.frame, text=_('Random'), takefocus=False, command=self.random_place, style='Small.Blue.TButton')
+        self.clear_button = ttk.Button(self.frame, text=_('Clear'), takefocus=False, command=self.clear, style='Small.Blue.TButton')
         self.is_ready = BooleanVar(value=False)
-        self.ready_check = Checkbutton(self.frame, text='Ready', takefocus=False,
+        self.ready_check = Checkbutton(self.frame, text=_('Ready'), takefocus=False,
                                        state='disabled', command=self.ready,
                                        variable=self.is_ready, onvalue=True, offvalue=False,
                                        background='#cfe2f3', activebackground='#cfe2f3')
@@ -74,7 +75,7 @@ class ShipPlacementScreen:
         self.root.game.queue = None
         self.root.game.thread = None
         self.is_ready.set(False)
-        self.message.set('Server is temporarily unavailable. Try later')
+        self.message.set(_('Server is temporarily unavailable. Try later'))
 
     def start_game(self):
         self.root.event_generate('<<Game>>')
@@ -143,7 +144,7 @@ class ShipPlacementScreen:
             coords = get_coords(pos, size, self.angle, self.root.game.me.field.cells)
             if len(coords) < size:
                 if self.message.get() == '':
-                    self.message.set('Can\'t put here. Try moving or rotating the ship')
+                    self.message.set(_('Can\'t put here. Try moving or rotating the ship'))
                 return
 
             if self.message.get() != '':
