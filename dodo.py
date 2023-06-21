@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+
+import glob
+from doit.tools import create_folder
+
+# DOIT_CONFIG = {'default_tasks': ['all']}
+
+
+def task_test():
+    """Perform tests."""
+    return {
+        'actions': ['python3 -m unittest discover tests']
+    }
+
+
+def task_pot():
+    """Re-create .pot ."""
+    return {
+            'actions': ['pybabel extract -o messages.pot battleship'],
+            'file_dep': glob.glob('battleship/*.py') + glob.glob('battleship/*/*.py'),
+            'targets': ['messages.pot'],
+           }
+
+
+def task_po():
+    """Update translations."""
+    return {
+            'actions': ['pybabel update -D messages -d battleship/translation -i messages.pot'],
+            'file_dep': ['messages.pot'],
+            'targets': ['battleship/translation/ru/LC_MESSAGES/messages.po'],
+           }
+
+
+def task_mo():
+    """Compile translations."""
+    return {
+            'actions': [
+                (create_folder, ['battleship/translation/ru/LC_MESSAGES']),
+                'pybabel compile -D messages -l ru -i battleship/translation/ru/LC_MESSAGES/messages.po -d battleship/translation'
+                       ],
+            'file_dep': ['battleship/translation/ru/LC_MESSAGES/messages.po'],
+            'targets': ['battleship/translation/ru/LC_MESSAGES/messages.mo'],
+           }
+
+
+def task_app():
+    """Run application."""
+    import battleship
+    return {
+            'actions': [battleship.main],
+            'task_dep': ['mo'],
+           }
+
+
+def task_style():
+    """Check style against flake8."""
+    return {
+            'actions': ['flake8 battleship']
+           }
+
+
+def task_docstyle():
+    """Check docstrings against pydocstyle."""
+    return {
+            'actions': ['pydocstyle battleship']
+           }
+
+
+def task_gitclean():
+    """Clean all generated files not tracked by GIT."""
+    return {
+            'actions': ['git clean -xdf'],
+           }
