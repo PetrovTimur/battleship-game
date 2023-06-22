@@ -286,3 +286,49 @@ class GameScreenTestCase(unittest.TestCase):
         tec.game_over()
         tec.queue.put.assert_called_once()
         tec.root.bind.assert_called_once()
+
+    def test_player_turn1(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.root = MagicMock()
+        tec.enemy_buttons = [[MagicMock()]*10]*10
+        tec.root.game.enemy_turn = MagicMock(return_value='hit')
+        tec.update_activity = MagicMock()
+        tec.queue = MagicMock()
+        tec.player_turn((1,1))
+        tec.queue.put.assert_called_once()
+        tec.update_activity.assert_called_once()
+        tec.enemy_buttons[0][0].state.assert_called()
+
+    def test_player_turn2(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.root = MagicMock()
+        tec.enemy_buttons = [[MagicMock()]*10]*10
+        tec.root.game.enemy_turn = MagicMock(return_value='sank')
+        tec.update_activity = MagicMock()
+        tec.queue = MagicMock()
+        tec.player_turn((1,1))
+        tec.queue.put.assert_called_once()
+        tec.update_activity.assert_called_once()
+        tec.enemy_buttons[0][0].state.assert_called()
+        tec.root.game.enemy.field.sank[-1].status.keysassert_called_once()
+
+    def test_player_turn3(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.root = MagicMock()
+        tec.enemy_buttons = [[MagicMock()]*10]*10
+        tec.root.game.enemy_turn = MagicMock(return_value='hay')
+        tec.update_activity = MagicMock()
+        tec.queue = MagicMock()
+        tec.player_turn((1,1))
+        tec.queue.put.assert_called_once()
+        tec.update_activity.assert_called_once()
+        tec.enemy_buttons[0][0].state.assert_called()
