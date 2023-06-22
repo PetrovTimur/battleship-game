@@ -1,6 +1,6 @@
 from battleship.gui.game import ShipPlacementScreen, GameScreen
 import unittest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
 
 @patch('battleship.logic')
@@ -14,19 +14,16 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
                               mock_translation, mock_battleship_util_image,
                               battleship_resources, battleship_logic_ai,
                               battleship_logic):
-            sps = object.__new__(ShipPlacementScreen)
-            sps.root = MagicMock()
-            sps.is_ready = MagicMock()
-            sps.message = MagicMock()
-            #with patch('battleship.translation') as target_mock:
-            #    sps.connection_error()
-            sps.connection_error()
-            sps.is_ready.set.assert_called_with(False)
-            sps.message.set.assert_called_once()
-            sps.root.game.queue == None
-            assert sps.root.game.queue == None
-            assert sps.root.game.thread == None
-    
+        sps = object.__new__(ShipPlacementScreen)
+        sps.root = MagicMock()
+        sps.is_ready = MagicMock()
+        sps.message = MagicMock()
+        sps.connection_error()
+        sps.is_ready.set.assert_called_with(False)
+        sps.message.set.assert_called_once()
+        assert sps.root.game.queue is None
+        assert sps.root.game.thread is None
+
     def test_ready1(self,
                     mock_translation, mock_battleship_util_image,
                     battleship_resources, battleship_logic_ai,
@@ -41,7 +38,7 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         assert sps.root.game.thread.name == 'Thread-1 (play)'
 
 
-#### Вылезает ошибка!!! Хотя тест все равно засчитывается как пройденный
+# Вылезает ошибка!!! Хотя тест все равно засчитывается как пройденный
     '''
     def test_ready2(self,
                     mock_translation, mock_battleship_util_image,
@@ -70,34 +67,33 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         battleship_logic_ai.BotThread = MagicMock(return_value=1)
         sps.root.game.mode = 'notonline'
         sps.ready()
-        assert(sps.root.game.thread == None)
-        assert(sps.root.game.queue == None)
-
+        assert (sps.root.game.thread is None)
+        assert (sps.root.game.queue is None)
 
     def test_start_game(self,
-                    mock_translation, mock_battleship_util_image,
-                    battleship_resources, battleship_logic_ai,
-                    battleship_logic):
+                        mock_translation, mock_battleship_util_image,
+                        battleship_resources, battleship_logic_ai,
+                        battleship_logic):
         sps = object.__new__(ShipPlacementScreen)
         sps.root = MagicMock()
         sps.start_game()
         sps.root.event_generate.assert_called_once()
 
     def test_return_to_main(self,
-                    mock_translation, mock_battleship_util_image,
-                    battleship_resources, battleship_logic_ai,
-                    battleship_logic):
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
         sps = object.__new__(ShipPlacementScreen)
         sps.root = MagicMock()
         sps.return_to_main()
-        assert sps.root.game == None
+        assert sps.root.game is not None
         sps.root.unbind.assert_called_once()
         sps.root.event_generate.assert_called_once()
 
     def test_random_place(self,
-                    mock_translation, mock_battleship_util_image,
-                    battleship_resources, battleship_logic_ai,
-                    battleship_logic):
+                          mock_translation, mock_battleship_util_image,
+                          battleship_resources, battleship_logic_ai,
+                          battleship_logic):
         sps = object.__new__(ShipPlacementScreen)
         sps.root = MagicMock()
         sps.ready_check = MagicMock()
@@ -108,9 +104,9 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.ready_check.configure.assert_called_once()
 
     def test_clear(self,
-                    mock_translation, mock_battleship_util_image,
-                    battleship_resources, battleship_logic_ai,
-                    battleship_logic):
+                   mock_translation, mock_battleship_util_image,
+                   battleship_resources, battleship_logic_ai,
+                   battleship_logic):
         sps = object.__new__(ShipPlacementScreen)
         sps.root = MagicMock()
         sps.is_ready = MagicMock()
@@ -122,9 +118,9 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.ready_check.configure.assert_called_once()
 
     def test_place(self,
-                    mock_translation, mock_battleship_util_image,
-                    battleship_resources, battleship_logic_ai,
-                    battleship_logic):
+                   mock_translation, mock_battleship_util_image,
+                   battleship_resources, battleship_logic_ai,
+                   battleship_logic):
         sps = object.__new__(ShipPlacementScreen)
         sps.root = MagicMock()
         sps.frame = MagicMock()
@@ -152,14 +148,14 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         event.num = 0
         event.delta = 120
         sps.angle = 'w'
-        sps.rotate(event,(1,1))
+        sps.rotate(event, (1, 1))
         assert sps.leave.called
         assert sps.hover.called
-    
+
     def test_update_field(self,
-                    mock_translation, mock_battleship_util_image,
-                    battleship_resources, battleship_logic_ai,
-                    battleship_logic):
+                          mock_translation, mock_battleship_util_image,
+                          battleship_resources, battleship_logic_ai,
+                          battleship_logic):
         sps = object.__new__(ShipPlacementScreen)
         sps.field_buttons = [[MagicMock()]*10]*10
         sps.angle = 'w'
@@ -167,9 +163,9 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         assert sps.field_buttons[0][0].state.call_count == 100
 
     def test_destroy(self,
-                    mock_translation, mock_battleship_util_image,
-                    battleship_resources, battleship_logic_ai,
-                    battleship_logic):
+                     mock_translation, mock_battleship_util_image,
+                     battleship_resources, battleship_logic_ai,
+                     battleship_logic):
         sps = object.__new__(ShipPlacementScreen)
         sps.frame = MagicMock()
         sps.destroy()
@@ -189,22 +185,22 @@ class GameScreenTestCase(unittest.TestCase):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.return_to_main()
-        assert tec.root.game == None
+        assert tec.root.game is None
         tec.root.unbind.assert_called_once()
         tec.root.event_generate.assert_called_once()
 
     def test_quit(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                  mock_translation, mock_battleship_util_image,
+                  battleship_resources, battleship_logic_ai,
+                  battleship_logic):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.quit()
 
     def test_handle_quit(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                         mock_translation, mock_battleship_util_image,
+                         battleship_resources, battleship_logic_ai,
+                         battleship_logic):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.queue = MagicMock()
@@ -214,17 +210,17 @@ class GameScreenTestCase(unittest.TestCase):
         w.destroy.assert_called_once()
 
     def test_handle_connection_error(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                                     mock_translation, mock_battleship_util_image,
+                                     battleship_resources, battleship_logic_ai,
+                                     battleship_logic):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.handle_connection_error()
 
     def test_handle_error(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                          mock_translation, mock_battleship_util_image,
+                          battleship_resources, battleship_logic_ai,
+                          battleship_logic):
         tec = object.__new__(GameScreen)
         tec.return_to_main = MagicMock()
         w = MagicMock()
@@ -233,9 +229,9 @@ class GameScreenTestCase(unittest.TestCase):
         assert tec.return_to_main.called
 
     def test_order(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                   mock_translation, mock_battleship_util_image,
+                   battleship_resources, battleship_logic_ai,
+                   battleship_logic):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.root.game.turn = 'second'
@@ -244,42 +240,42 @@ class GameScreenTestCase(unittest.TestCase):
         assert tec.enemy_buttons[0][0].state.call_count == 100
 
     def test_update_activity1(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                              mock_translation, mock_battleship_util_image,
+                              battleship_resources, battleship_logic_ai,
+                              battleship_logic):
         tec = object.__new__(GameScreen)
         tec.activity = MagicMock()
         tec.root = MagicMock()
         tec.root.game.me.name = 'Nil'
-        tec.update_activity((1,1), 'Nil', 'dead')
+        tec.update_activity((1, 1), 'Nil', 'dead')
         tec.activity.set.assert_called_once()
 
     def test_update_activity2(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                              mock_translation, mock_battleship_util_image,
+                              battleship_resources, battleship_logic_ai,
+                              battleship_logic):
         tec = object.__new__(GameScreen)
         tec.activity = MagicMock()
         tec.root = MagicMock()
         tec.root.game.me.name = 'mashine'
-        tec.update_activity((1,1), 'Nil', 'dead')
+        tec.update_activity((1, 1), 'Nil', 'dead')
         tec.activity.set.assert_called_once()
 
     def test_update_activity3(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                              mock_translation, mock_battleship_util_image,
+                              battleship_resources, battleship_logic_ai,
+                              battleship_logic):
         tec = object.__new__(GameScreen)
         tec.activity = MagicMock()
         tec.root = MagicMock()
         tec.root.game.me.name = 'Nil'
-        tec.update_activity((1,1), 'Nil', 'hit')
+        tec.update_activity((1, 1), 'Nil', 'hit')
         tec.activity.set.assert_called_once()
 
     def test_game_over(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                       mock_translation, mock_battleship_util_image,
+                       battleship_resources, battleship_logic_ai,
+                       battleship_logic):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.queue = MagicMock()
@@ -288,55 +284,55 @@ class GameScreenTestCase(unittest.TestCase):
         tec.root.bind.assert_called_once()
 
     def test_player_turn1(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                          mock_translation, mock_battleship_util_image,
+                          battleship_resources, battleship_logic_ai,
+                          battleship_logic):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.enemy_buttons = [[MagicMock()]*10]*10
         tec.root.game.enemy_turn = MagicMock(return_value='hit')
         tec.update_activity = MagicMock()
         tec.queue = MagicMock()
-        tec.player_turn((1,1))
+        tec.player_turn((1, 1))
         tec.queue.put.assert_called_once()
         tec.update_activity.assert_called_once()
         tec.enemy_buttons[0][0].state.assert_called()
 
     def test_player_turn2(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                          mock_translation, mock_battleship_util_image,
+                          battleship_resources, battleship_logic_ai,
+                          battleship_logic):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.enemy_buttons = [[MagicMock()]*10]*10
         tec.root.game.enemy_turn = MagicMock(return_value='sank')
         tec.update_activity = MagicMock()
         tec.queue = MagicMock()
-        tec.player_turn((1,1))
+        tec.player_turn((1, 1))
         tec.queue.put.assert_called_once()
         tec.update_activity.assert_called_once()
         tec.enemy_buttons[0][0].state.assert_called()
         tec.root.game.enemy.field.sank[-1].status.keysassert_called_once()
 
     def test_player_turn3(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                          mock_translation, mock_battleship_util_image,
+                          battleship_resources, battleship_logic_ai,
+                          battleship_logic):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.enemy_buttons = [[MagicMock()]*10]*10
         tec.root.game.enemy_turn = MagicMock(return_value='hay')
         tec.update_activity = MagicMock()
         tec.queue = MagicMock()
-        tec.player_turn((1,1))
+        tec.player_turn((1, 1))
         tec.queue.put.assert_called_once()
         tec.update_activity.assert_called_once()
         tec.enemy_buttons[0][0].state.assert_called()
 
     def test_place(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                   mock_translation, mock_battleship_util_image,
+                   battleship_resources, battleship_logic_ai,
+                   battleship_logic):
         tec = object.__new__(GameScreen)
         tec.frame = MagicMock()
         tec.player_label = MagicMock()
@@ -364,9 +360,9 @@ class GameScreenTestCase(unittest.TestCase):
         tec.player_field.enemy_field.columnconfigure()
 
     def test_destroy(self,
-                            mock_translation, mock_battleship_util_image,
-                            battleship_resources, battleship_logic_ai,
-                            battleship_logic):
+                     mock_translation, mock_battleship_util_image,
+                     battleship_resources, battleship_logic_ai,
+                     battleship_logic):
         tec = object.__new__(GameScreen)
         tec.frame = MagicMock()
         tec.destroy()

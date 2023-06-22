@@ -18,13 +18,17 @@ class ShipPlacementScreen:
         self.title = ttk.Label(self.frame, text=_('Place your ships'), style='Big.Blue.TLabel')
 
         self.message = StringVar()
-        self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center', anchor='center', style='Blue.TLabel')
+        self.message_label = ttk.Label(self.frame, textvariable=self.message, justify='center',
+                                       anchor='center', style='Blue.TLabel')
 
-        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center',
+                                      anchor='center', compound='left', style='Blue.TLabel')
 
         self.field_frame = ttk.Frame(self.frame)
-        self.random_button = ttk.Button(self.frame, text=_('Random'), takefocus=False, command=self.random_place, style='Small.Blue.TButton')
-        self.clear_button = ttk.Button(self.frame, text=_('Clear'), takefocus=False, command=self.clear, style='Small.Blue.TButton')
+        self.random_button = ttk.Button(self.frame, text=_('Random'), takefocus=False,
+                                        command=self.random_place, style='Small.Blue.TButton')
+        self.clear_button = ttk.Button(self.frame, text=_('Clear'), takefocus=False,
+                                       command=self.clear, style='Small.Blue.TButton')
         self.is_ready = BooleanVar(value=False)
         self.ready_check = Checkbutton(self.frame, text=_('Ready'), takefocus=False,
                                        state='disabled', command=self.ready,
@@ -35,15 +39,22 @@ class ShipPlacementScreen:
         for i in range(FIELD_SIZE):
             self.field_buttons.append([])
             for j in range(FIELD_SIZE):
-                self.field_buttons[i].append(ttk.Button(self.field_frame, takefocus=False, style='Empty.TButton'))
-                self.field_buttons[i][j].bind('<Enter>', lambda e, col=i, row=j: self.hover((col, row)))
-                self.field_buttons[i][j].bind('<Leave>', lambda e, col=i, row=j: self.leave((col, row)))
+                self.field_buttons[i].append(ttk.Button(self.field_frame, takefocus=False,
+                                                        style='Empty.TButton'))
+                self.field_buttons[i][j].bind('<Enter>', lambda e, col=i, row=j:
+                                              self.hover((col, row)))
+                self.field_buttons[i][j].bind('<Leave>', lambda e, col=i, row=j:
+                                              self.leave((col, row)))
 
-                self.field_buttons[i][j].bind('<MouseWheel>', lambda e, col=i, row=j: self.rotate(e, (col, row)))
-                self.field_buttons[i][j].bind('<Button-4>', lambda e, col=i, row=j: self.rotate(e, (col, row)))
-                self.field_buttons[i][j].bind('<Button-5>', lambda e, col=i, row=j: self.rotate(e, (col, row)))
+                self.field_buttons[i][j].bind('<MouseWheel>', lambda e, col=i, row=j:
+                                              self.rotate(e, (col, row)))
+                self.field_buttons[i][j].bind('<Button-4>', lambda e, col=i, row=j:
+                                              self.rotate(e, (col, row)))
+                self.field_buttons[i][j].bind('<Button-5>', lambda e, col=i, row=j:
+                                              self.rotate(e, (col, row)))
 
-                self.field_buttons[i][j].configure(command=lambda col=i, row=j: self.place_ship((col, row)))
+                self.field_buttons[i][j].configure(command=lambda col=i, row=j:
+                                                   self.place_ship((col, row)))
 
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
@@ -220,10 +231,12 @@ class GameScreen:
         self.player_label = ttk.Label(self.frame, text='', style='Blue.TLabel')
         self.enemy_label = ttk.Label(self.frame, text='', style='Blue.TLabel')
 
-        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center',
+                                      anchor='center', compound='left', style='Blue.TLabel')
 
         self.activity = StringVar()
-        self.activity_label = ttk.Label(self.frame, textvariable=self.activity, justify='center', anchor='center', style='Blue.TLabel')
+        self.activity_label = ttk.Label(self.frame, textvariable=self.activity, justify='center',
+                                        anchor='center', style='Blue.TLabel')
 
         self.player_field = ttk.Frame(self.frame, style='Blue.TFrame')
         self.enemy_field = ttk.Frame(self.frame, style='Blue.TFrame')
@@ -237,19 +250,26 @@ class GameScreen:
         for i in range(FIELD_SIZE):
             self.player_buttons.append([])
             self.enemy_buttons.append([])
-            self.player_row_labels.append(ttk.Label(self.player_field, text=str(i + 1), width=3, anchor='center', style='Blue.TLabel'))
-            self.player_col_labels.append(ttk.Label(self.player_field, text=chr(ord(_('A')) + i), width=3, anchor='center', style='Blue.TLabel'))
-            self.enemy_row_labels.append(ttk.Label(self.enemy_field, text=str(i + 1), width=3, anchor='center', style='Blue.TLabel'))
-            self.enemy_col_labels.append(ttk.Label(self.enemy_field, text=chr(ord(_('A')) + i), width=3, anchor='center', style='Blue.TLabel'))
+            self.player_row_labels.append(ttk.Label(self.player_field, text=str(i + 1), width=3,
+                                                    anchor='center', style='Blue.TLabel'))
+            self.player_col_labels.append(ttk.Label(self.player_field, text=chr(ord(_('A')) + i),
+                                                    width=3, anchor='center', style='Blue.TLabel'))
+            self.enemy_row_labels.append(ttk.Label(self.enemy_field, text=str(i + 1), width=3,
+                                                   anchor='center', style='Blue.TLabel'))
+            self.enemy_col_labels.append(ttk.Label(self.enemy_field, text=chr(ord(_('A')) + i),
+                                                   width=3, anchor='center', style='Blue.TLabel'))
             for j in range(FIELD_SIZE):
-                self.player_buttons[i].append(ttk.Button(self.player_field, takefocus=False, style='Empty.TButton'))
-                self.enemy_buttons[i].append(ttk.Button(self.enemy_field, takefocus=False, style='Empty.TButton'))
+                self.player_buttons[i].append(ttk.Button(self.player_field, takefocus=False,
+                                                         style='Empty.TButton'))
+                self.enemy_buttons[i].append(ttk.Button(self.enemy_field, takefocus=False,
+                                                        style='Empty.TButton'))
 
                 self.player_buttons[i][j]['style'] = 'Ship.TButton' \
                     if self.root.game.me.field.cells[i][j] > 0 else 'Empty.TButton'
                 self.player_buttons[i][j].state(['disabled'])
 
-                self.enemy_buttons[i][j].configure(command=lambda col=i, row=j: self.player_turn((col, row)))
+                self.enemy_buttons[i][j].configure(command=lambda col=i, row=j:
+                                                   self.player_turn((col, row)))
 
         self.root.bind('<Escape>', lambda e: self.quit())
         self.frame.bind('<<EnemyTurn>>', lambda e: self.enemy_turn())
@@ -264,7 +284,8 @@ class GameScreen:
         self.player_label['text'] = self.root.game.me.name
         self.enemy_label['text'] = self.root.game.enemy.name
 
-        self.activity.set('{me!r} vs {enemy!r}'.format(me=self.root.game.me.name, enemy=self.root.game.enemy.name))
+        self.activity.set('{me!r} vs {enemy!r}'.format(me=self.root.game.me.name,
+                                                       enemy=self.root.game.enemy.name))
 
         self.order()
         self.place()
@@ -298,7 +319,8 @@ class GameScreen:
         question_label = ttk.Label(win, text=_('Quit to main?'))
         question_label.grid(column=0, row=0, columnspan=2, rowspan=2)
 
-        yes_button = ttk.Button(win, text=_('Yes'), takefocus=False, command=lambda window=win: self.handle_quit(window))
+        yes_button = ttk.Button(win, text=_('Yes'), takefocus=False, command=lambda window=win:
+                                self.handle_quit(window))
         no_button = ttk.Button(win, text=_('No'), takefocus=False, command=win.destroy)
         yes_button.grid(column=0, row=2, rowspan=2)
         no_button.grid(column=1, row=2, rowspan=2)
@@ -334,7 +356,8 @@ class GameScreen:
         question_label = ttk.Label(win, text=_('Connection lost'))
         question_label.grid(column=0, row=0, columnspan=2, rowspan=2)
 
-        ok_button = ttk.Button(win, text=_('Ok'), takefocus=False, command=lambda window=win: self.handle_error(window))
+        ok_button = ttk.Button(win, text=_('Ok'), takefocus=False, command=lambda window=win:
+                               self.handle_error(window))
         ok_button.grid(column=0, row=2, rowspan=2, columnspan=2)
 
         win.protocol("WM_DELETE_WINDOW", lambda window=win: self.handle_error(window))
@@ -367,7 +390,8 @@ class GameScreen:
             'win': _('You won!'),
             'loss': _('You lost!')
         }
-        self.activity.set(_('{player!r} shoots at {coord}\n{status}').format(player=player, coord=coord, status=statuses[status]))
+        self.activity.set(_('{player!r} shoots at {coord}\n{status}')
+                          .format(player=player, coord=coord, status=statuses[status]))
 
     def game_over(self):
         if self.root.game.mode == 'online':
@@ -460,10 +484,14 @@ class GameScreen:
                 self.player_buttons[i][j].grid(column=i + 1, row=FIELD_SIZE - j, sticky='nsew')
                 self.enemy_buttons[i][j].grid(column=i + 1, row=FIELD_SIZE - j, sticky='nsew')
 
-        self.player_field.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
-        self.player_field.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
-        self.enemy_field.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
-        self.enemy_field.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1, minsize=20)
+        self.player_field.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1,
+                                       minsize=20)
+        self.player_field.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1,
+                                          minsize=20)
+        self.enemy_field.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1,
+                                      minsize=20)
+        self.enemy_field.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1,
+                                         minsize=20)
 
     def destroy(self):
         self.frame.destroy()

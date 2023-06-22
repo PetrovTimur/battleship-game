@@ -49,44 +49,44 @@ def surrounding(coords):
 
 
 def random_ships_matrix():
-    sizes = [4,3,3,2,2,2,1,1,1,1]
+    sizes = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
     number = 1
     cells = [[None]*10 for _ in range(10)]
-    angles = {  0: 'w',
-                1: 'n',
-                2: 'e',
-                3: 's'}
+    angles = {0: 'w',
+              1: 'n',
+              2: 'e',
+              3: 's'}
     coords = []
     for size in sizes:
         f = True
         while f:
-            pos = (randint (0, 9), randint (0, 9))
-            angle = angles[randint(0,3)]
+            pos = (randint(0, 9), randint(0, 9))
+            angle = angles[randint(0, 3)]
             coords = get_coords(pos, size, angle)
             while len(coords) != size:
-                pos = (randint (0, 9), randint (0, 9))
-                angle = angles[randint(0,3)]
+                pos = (randint(0, 9), randint(0, 9))
+                angle = angles[randint(0, 3)]
                 coords = get_coords(pos, size, angle)
             f = False
             for i in coords:
-                if cells[i[0]][i[1]] != None:
+                if cells[i[0]][i[1]] is not None:
                     f = True
                     break
         for coord in coords:
             cells[coord[0]][coord[1]] = number
         for coord in coords:
-            if coord[0]<9 and cells[coord[0]+1][coord[1]] == None:
+            if coord[0] < 9 and cells[coord[0]+1][coord[1]] is None:
                 cells[coord[0]+1][coord[1]] = 0
-            if coord[1]<9 and cells[coord[0]][coord[1]+1] == None:
+            if coord[1] < 9 and cells[coord[0]][coord[1]+1] is None:
                 cells[coord[0]][coord[1]+1] = 0
-            if coord[0]>0 and cells[coord[0]-1][coord[1]] == None:
+            if coord[0] > 0 and cells[coord[0]-1][coord[1]] is None:
                 cells[coord[0]-1][coord[1]] = 0
-            if coord[1]>0 and cells[coord[0]][coord[1]-1] == None:
+            if coord[1] > 0 and cells[coord[0]][coord[1]-1] is None:
                 cells[coord[0]][coord[1]-1] = 0
         number += 1
     for i in range(len(cells)):
         for i2 in range(len(cells[i])):
-            if cells[i][i2] == None:
+            if cells[i][i2] is None:
                 cells[i][i2] = 0
     return cells
 
@@ -97,8 +97,8 @@ def random_ships(cells):
         coords = []
         for x in range(len(cells)):
             for y in range(len(cells)):
-                if cells [x][y] == i+1:
-                    coords.append((x,y))
+                if cells[x][y] == i+1:
+                    coords.append((x, y))
         ships_coords[i+1] = coords
     return ships_coords
 

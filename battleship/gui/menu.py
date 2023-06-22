@@ -11,7 +11,8 @@ class StartScreen:
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
-        self.title = ttk.Label(self.frame, text=_('Welcome, {name}!').format(name=self.root.appOpts['name']), style='Big.Blue.TLabel')
+        self.title = ttk.Label(self.frame, text=_('Welcome, {name}!')
+                               .format(name=self.root.appOpts['name']), style='Big.Blue.TLabel')
 
         self.buttonsConfig = [
             {
@@ -31,7 +32,8 @@ class StartScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.Blue.TButton', **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False,
+                                           style='Big.Blue.TButton', **buttonConfig))
 
         self.place()
 
@@ -56,7 +58,8 @@ class SettingsScreen:
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
         self.title = ttk.Label(self.frame, text=_('Settings'), style='Big.Blue.TLabel')
-        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center',
+                                      anchor='center', compound='left', style='Blue.TLabel')
 
         self.settings_frame = ttk.Frame(self.frame, style='Bluer.TFrame', relief='groove')
 
@@ -67,7 +70,8 @@ class SettingsScreen:
             textvariable=self.name)
 
         self.resolution = StringVar(self.frame, self.root.appOpts['resolution'])
-        self.resolution_options = ['640x360', '960x540', '1280x720', '1600x900', '1920x1080', '2560x1440']
+        self.resolution_options = ['640x360', '960x540', '1280x720', '1600x900', '1920x1080',
+                                   '2560x1440']
         self.resolution_menu = ttk.OptionMenu(
             self.settings_frame,
             self.resolution,
@@ -78,7 +82,8 @@ class SettingsScreen:
 
         self.resolution_menu['menu'].config(bg='#cfe2f3', activebackground='#6fa8dc')
 
-        self.fullscreen = BooleanVar(self.settings_frame, self.root.appOpts.getboolean('fullscreen'))
+        self.fullscreen = BooleanVar(self.settings_frame,
+                                     self.root.appOpts.getboolean('fullscreen'))
         self.fullscreen_button = Checkbutton(
             self.settings_frame,
             variable=self.fullscreen,
@@ -187,7 +192,8 @@ class NewGameSetupScreen:
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
 
         self.title = ttk.Label(self.frame, text=_('Choose game mode'), style='Big.Blue.TLabel')
-        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center',
+                                      anchor='center', compound='left', style='Blue.TLabel')
 
         self.buttonsConfig = [
             {
@@ -202,7 +208,8 @@ class NewGameSetupScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.Blue.TButton', **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.Blue.TButton',
+                                           **buttonConfig))
 
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
