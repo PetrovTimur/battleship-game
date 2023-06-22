@@ -167,3 +167,12 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         for i1 in range(10):
             for i2 in range(10):
                 assert sps.field_buttons[i1][i2].state.call_count == 100
+
+    def test_destroy(self,
+                    mock_translation, mock_battleship_util_image,
+                    battleship_resources, battleship_logic_ai,
+                    battleship_logic):
+        sps = object.__new__(ShipPlacementScreen)
+        sps.frame = MagicMock()
+        sps.destroy()
+        sps.frame.destroy.assert_called_once()
