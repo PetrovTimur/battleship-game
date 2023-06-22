@@ -1,13 +1,18 @@
+"""User config."""
+
 import configparser
 from os.path import exists
 import battleship.resources as resources
 
 
 class Config:
+    """Class to describe user's config."""
+
     file = None
 
     @staticmethod
     def load():
+        """Load config file or create one."""
         if not exists(resources.config):
             Config.default()
         Config.file = configparser.ConfigParser()
@@ -15,6 +20,7 @@ class Config:
 
     @staticmethod
     def save(value, field='settings'):
+        """Save to config file."""
         if Config.file is None:
             Config.load()
         Config.file[field] = value
@@ -23,12 +29,14 @@ class Config:
 
     @staticmethod
     def get(field='settings'):
+        """Get config keys and values."""
         if Config.file is None:
             Config.load()
         return Config.file[field]
 
     @staticmethod
     def default():
+        """Create default config."""
         config = configparser.ConfigParser()
 
         config['settings'] = {'name': 'Player',

@@ -1,3 +1,5 @@
+"""Translation module."""
+
 import gettext
 from battleship.util import Config
 import battleship.resources as resources
@@ -11,6 +13,7 @@ def _(string):
 
 
 def setLang(language):
+    """Set translation language."""
     global LANGUAGE
     LANGUAGE = language
 

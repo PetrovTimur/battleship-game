@@ -1,3 +1,5 @@
+"""Main GUI module that draws all app attributes."""
+
 from tkinter import Tk
 from .menu import StartScreen, SettingsScreen, NewGameSetupScreen
 from .game import ShipPlacementScreen, GameScreen
@@ -9,9 +11,10 @@ from battleship.translation import setLang
 
 
 class App(Tk):
+    """GUI app class."""
+
     def __init__(self):
-        '''Setting up the home screen and preparing for the
-          application'''
+        """Initialize GUI app."""
         super().__init__()
 
         self.title('Battleship')
@@ -44,8 +47,7 @@ class App(Tk):
         self.change_screen('Main')
 
     def change_screen(self, screen):
-        '''Changes the working window to the new onespecified in
-          the screen variable'''
+        """Change current screen to another one."""
         self.screen = screen
         if self.session:
             self.session.destroy()

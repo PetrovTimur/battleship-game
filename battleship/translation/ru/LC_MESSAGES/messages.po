@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-06-22 21:25+0300\n"
+"POT-Creation-Date: 2023-06-22 23:16+0300\n"
 "PO-Revision-Date: 2023-06-21 14:57+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -19,85 +19,85 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.12.1\n"
 
-#: battleship/gui/game.py:18
+#: battleship/gui/game.py:20
 msgid "Place your ships"
 msgstr "Поставьте ваши корабли"
 
-#: battleship/gui/game.py:23 battleship/gui/game.py:223
-#: battleship/gui/menu.py:59 battleship/gui/menu.py:190
+#: battleship/gui/game.py:26 battleship/gui/game.py:250
+#: battleship/gui/menu.py:65 battleship/gui/menu.py:205
 msgid "Return"
 msgstr "Назад"
 
-#: battleship/gui/game.py:26
+#: battleship/gui/game.py:30
 msgid "Random"
 msgstr "Случайно"
 
-#: battleship/gui/game.py:27
+#: battleship/gui/game.py:32
 msgid "Clear"
 msgstr "Очистить"
 
-#: battleship/gui/game.py:29
+#: battleship/gui/game.py:35
 msgid "Ready"
 msgstr "Готов"
 
-#: battleship/gui/game.py:78
+#: battleship/gui/game.py:93
 msgid "Server is temporarily unavailable. Try later"
 msgstr "Сервер временно недоступен. Попробуйте позже"
 
-#: battleship/gui/game.py:147
+#: battleship/gui/game.py:168
 msgid "Can't put here. Try moving or rotating the ship"
 msgstr "Сюда нельзя поставить корабль. Попробуйте его подвинуть или повернуть"
 
-#: battleship/gui/game.py:241 battleship/gui/game.py:243
-#: battleship/gui/game.py:356
+#: battleship/gui/game.py:271 battleship/gui/game.py:275
+#: battleship/gui/game.py:402
 msgid "A"
 msgstr "А"
 
-#: battleship/gui/game.py:294 battleship/gui/game.py:330
+#: battleship/gui/game.py:333 battleship/gui/game.py:372
 msgid "Warning"
 msgstr "Внимание"
 
-#: battleship/gui/game.py:298
+#: battleship/gui/game.py:337
 msgid "Quit to main?"
 msgstr "Выйти в главное меню?"
 
-#: battleship/gui/game.py:301
+#: battleship/gui/game.py:340
 msgid "Yes"
 msgstr "Да"
 
-#: battleship/gui/game.py:302
+#: battleship/gui/game.py:342
 msgid "No"
 msgstr "Нет"
 
-#: battleship/gui/game.py:334
+#: battleship/gui/game.py:376
 msgid "Connection lost"
 msgstr "Соединение потеряно"
 
-#: battleship/gui/game.py:337
+#: battleship/gui/game.py:379
 msgid "Ok"
 msgstr "Ок"
 
-#: battleship/gui/game.py:364
+#: battleship/gui/game.py:410
 msgid "miss"
 msgstr "мимо"
 
-#: battleship/gui/game.py:365
+#: battleship/gui/game.py:411
 msgid "hit"
 msgstr "попал"
 
-#: battleship/gui/game.py:366
+#: battleship/gui/game.py:412
 msgid "sank"
 msgstr "потопил"
 
-#: battleship/gui/game.py:367
+#: battleship/gui/game.py:413
 msgid "You won!"
 msgstr "Вы выиграли!"
 
-#: battleship/gui/game.py:368
+#: battleship/gui/game.py:414
 msgid "You lost!"
 msgstr "Вы проиграли!"
 
-#: battleship/gui/game.py:370
+#: battleship/gui/game.py:416
 msgid ""
 "{player!r} shoots at {coord}\n"
 "{status}"
@@ -105,51 +105,51 @@ msgstr ""
 "{player!r} стреляет в {coord}\n"
 "{status}"
 
-#: battleship/gui/menu.py:14
+#: battleship/gui/menu.py:15
 msgid "Welcome, {name}!"
 msgstr "Привет, {name}!"
 
-#: battleship/gui/menu.py:18
+#: battleship/gui/menu.py:20
 msgid "New Game"
 msgstr "Новая игра"
 
-#: battleship/gui/menu.py:22 battleship/gui/menu.py:58
+#: battleship/gui/menu.py:24 battleship/gui/menu.py:64
 msgid "Settings"
 msgstr "Настройки"
 
-#: battleship/gui/menu.py:26
+#: battleship/gui/menu.py:28
 msgid "Exit"
 msgstr "Выход"
 
-#: battleship/gui/menu.py:104
+#: battleship/gui/menu.py:113
 msgid "Name"
 msgstr "Имя"
 
-#: battleship/gui/menu.py:107
+#: battleship/gui/menu.py:116
 msgid "Resolution"
 msgstr "Разрешение"
 
-#: battleship/gui/menu.py:110
+#: battleship/gui/menu.py:119
 msgid "Fullscreen mode"
 msgstr "Полноэкранный режим"
 
-#: battleship/gui/menu.py:113
+#: battleship/gui/menu.py:122
 msgid "Language"
 msgstr "Язык"
 
-#: battleship/gui/menu.py:189
+#: battleship/gui/menu.py:204
 msgid "Choose game mode"
 msgstr "Выберите режим игры"
 
-#: battleship/gui/menu.py:194
+#: battleship/gui/menu.py:210
 msgid "Single"
 msgstr "Одиночный"
 
-#: battleship/gui/menu.py:198
+#: battleship/gui/menu.py:214
 msgid "Online"
 msgstr "Онлайн"
 
-#: battleship/logic/game.py:111
+#: battleship/logic/game.py:121
 msgid "AI"
 msgstr "ИИ"
 
