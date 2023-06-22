@@ -41,7 +41,7 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         assert sps.root.game.thread.name == 'Thread-1 (play)'
 
 
-#### Вылезает ошибка!!!
+#### Вылезает ошибка!!! Хотя тест все равно засчитывается как пройденный
     '''
     def test_ready2(self,
                     mock_translation, mock_battleship_util_image,
