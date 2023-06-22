@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pillow = "*"
+
+[dev-packages]
+doit = "*"
+flake8 = "*"
+pydocstyle = "*"
+sphinx = "*"
+babel = "*"
+wheel = "*"
+build = "*"
+
+[requires]
+python_version = "3.10"
+python_full_version = "3.10.4"
