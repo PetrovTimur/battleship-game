@@ -362,3 +362,12 @@ class GameScreenTestCase(unittest.TestCase):
         tec.player_field.player_field.columnconfigure()
         tec.player_field.renemy_field.rowconfigure()
         tec.player_field.enemy_field.columnconfigure()
+
+    def test_destroy(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.frame = MagicMock()
+        tec.destroy()
+        tec.frame.destroy.assert_called_once()
