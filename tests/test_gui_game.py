@@ -57,3 +57,18 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.is_ready.get.assert_called_once()
         assert sps.root.game.thread.name == 'Thread-2'
     '''
+
+    def test_ready3(self,
+                    mock_translation, mock_battleship_util_image,
+                    battleship_resources, battleship_logic_ai,
+                    battleship_logic):
+
+        sps = object.__new__(ShipPlacementScreen)
+        sps.root = MagicMock()
+        sps.is_ready = MagicMock()
+        sps.is_ready.get = MagicMock(return_value=False)
+        battleship_logic_ai.BotThread = MagicMock(return_value=1)
+        sps.root.game.mode = 'notonline'
+        sps.ready()
+        assert(sps.root.game.thread == None)
+        assert(sps.root.game.queue == None)
