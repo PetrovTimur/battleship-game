@@ -18,9 +18,13 @@ def setLang(language):
     LANGUAGE = language
 
 
-if "LANGUAGE" not in globals():
-    LANGUAGE = Config.get()["language"]
-    ruTrans = gettext.translation(
-        "messages", resources.translation, languages=("ru",)
-    )
-    _ru = ruTrans.gettext
+def get_translation():
+    """Define translations."""
+    if "LANGUAGE" not in globals():
+        global LANGUAGE
+        LANGUAGE = Config.get()["language"]
+        ruTrans = gettext.translation(
+            "messages", resources.translation, languages=("ru",)
+        )
+        global _ru
+        _ru = ruTrans.gettext

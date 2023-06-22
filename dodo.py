@@ -44,7 +44,6 @@ def task_mo():
            }
 
 
-@create_after(executed='mo')
 def task_app():
     """Run application."""
     from battleship import main
