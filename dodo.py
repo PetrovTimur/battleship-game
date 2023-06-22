@@ -4,7 +4,7 @@ import glob
 from doit.tools import create_folder
 from doit import create_after
 
-DOIT_CONFIG = {'default_tasks': ['test']}
+DOIT_CONFIG = {'default_tasks': ['app']}
 
 
 def task_test():
@@ -80,4 +80,12 @@ def task_wheel():
     return {
             'actions': ['python -m build -n -w'],
             'task_dep': ['mo'],
+           }
+
+
+def task_sdist():
+    """Create source distribution."""
+    return {
+            'actions': ['python -m build -s -n'],
+            'task_dep': ['gitclean'],
            }
