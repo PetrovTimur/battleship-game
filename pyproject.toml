@@ -1,13 +1,13 @@
 [project]
 name = "Battleship"
-version = "0.1.0"
-description = "Exam project for PythonDevelopment2023 course"
-readme = "README.rst"
+version = "0.0.1"
+description = "Battleship game"
+readme = "README.md"
 requires-python = ">=3.10"
-license = {file = "COPYING"}
+license = {file = "LICENSE"}
 authors = [
- {name = "Timur Petrov", email = "s02200459@gse.cs.msu.ru"},
- {name = "Neil Nenakhov", email = "mail@example.com"}
+ {name = "Timur Petrov"},
+ {name = "Neil Nenakhov"}
 ]
 
 keywords = ["tkinter", "asyncio", "project"]
@@ -18,17 +18,17 @@ classifiers = [
       "Operating System :: OS Independent",
 ]
 
-dependencies = ["Sphinx", "doit", "flake8", "pydocstyle", "wheel", "setuptools", "pillow"]
+dependencies = ["pillow"]
 
 [project.gui-scripts]
 play-battleship = "battleship:main"
 
 [build-system]
-requires = ["Sphinx", "build", "doit", "flake8", "pydocstyle", "setuptools"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-dir]
 battleship = "battleship"
 
 [tool.setuptools.package-data]
-battleship = ["translation/ru/*/*.mo"]
+battleship = ["translation/ru/*/*.mo", "resources/images/*"]
