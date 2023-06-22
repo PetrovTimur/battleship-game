@@ -202,3 +202,15 @@ class GameScreenTestCase(unittest.TestCase):
         tec = object.__new__(GameScreen)
         tec.root = MagicMock()
         tec.quit()
+
+    def test_handle_quit(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.root = MagicMock()
+        tec.queue = MagicMock()
+        w = MagicMock()
+        tec.handle_quit(w)
+        tec.queue.put.assert_called_once()
+        w.destroy.assert_called_once()
