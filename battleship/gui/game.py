@@ -11,7 +11,9 @@ FIELD_SIZE = 10
 
 
 class ShipPlacementScreen:
+    '''The screen of the placement of ships on the field'''
     def __init__(self, window):
+        '''Prepares the ship placement window'''
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
@@ -68,6 +70,7 @@ class ShipPlacementScreen:
         self.message_label.configure(wraplength=self.frame.winfo_width() // 8)
 
     def ready(self):
+        '''Completes the placement of ships'''
         if self.is_ready.get():
             self.root.game.queue = queue.Queue()
             if self.root.game.mode == 'single':
@@ -83,15 +86,18 @@ class ShipPlacementScreen:
             self.root.game.thread = None
 
     def connection_error(self):
+        '''Handles the error that occurs if it is not possible to contact the server'''
         self.root.game.queue = None
         self.root.game.thread = None
         self.is_ready.set(False)
         self.message.set(_('Server is temporarily unavailable. Try later'))
 
     def start_game(self):
+        '''Changes the event variable after the game starts'''
         self.root.event_generate('<<Game>>')
 
     def return_to_main(self):
+        '''Returns to the start screen'''
         if self.root.game.mode == 'online' and self.is_ready.get():
             asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
                                              self.root.game.thread.asyncio_loop)
@@ -101,6 +107,7 @@ class ShipPlacementScreen:
         self.root.event_generate('<<Main>>')
 
     def random_place(self):
+        '''Determines the random placement of ships in the field for the bot'''
         self.root.game.me.field.auto_place()
 
         for i in range(FIELD_SIZE):
@@ -112,6 +119,7 @@ class ShipPlacementScreen:
         self.ready_check.configure(state='normal')
 
     def clear(self):
+        '''Clears the field'''
         self.root.game.me.field.clear()
 
         for i in range(FIELD_SIZE):
@@ -123,6 +131,7 @@ class ShipPlacementScreen:
         self.ready_check.configure(state='disabled')
 
     def place(self):
+        '''Places ships on the field'''
         self.frame.grid(column=0, row=0, sticky='nsew')
         self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
@@ -146,6 +155,7 @@ class ShipPlacementScreen:
         self.field_frame.columnconfigure('all', weight=1)
 
     def hover(self, pos):
+        '''Indicates the cells on which the ship will be placed when this cell is selected'''
         col, row = pos
         current_button = self.field_buttons[col][row]
         current_button.state(['!hover'])
@@ -165,6 +175,8 @@ class ShipPlacementScreen:
                 self.field_buttons[col][row].state(['hover'])
 
     def leave(self, pos):
+        '''Removes the selection of cells on which the root will be placed when selecting
+          this cell'''
         col, row = pos
         current_button = self.field_buttons[col][row]
         if current_button.instate(['!disabled']):
@@ -179,6 +191,7 @@ class ShipPlacementScreen:
                 self.field_buttons[col][row].state(['!hover'])
 
     def rotate(self, event, pos):
+        '''Rotates the ship around the selected cell'''
         angles = ['w', 'n', 'e', 's']
 
         sign = 0
@@ -192,6 +205,7 @@ class ShipPlacementScreen:
         self.hover(pos)
 
     def place_ship(self, pos):
+        '''Places a specific ship on the field'''
         size = self.root.game.me.field.ships[self.root.game.me.field.placed].size
 
         coords = get_coords(pos, size, self.angle, self.root.game.me.field.cells)
@@ -214,6 +228,7 @@ class ShipPlacementScreen:
             self.ready_check.configure(state='normal')
 
     def update_field(self):
+        '''Disables all buttons on the field'''
         for i in range(FIELD_SIZE):
             for j in range(FIELD_SIZE):
                 self.field_buttons[i][j].state(['disabled'])
@@ -223,6 +238,7 @@ class ShipPlacementScreen:
 
 
 class GameScreen:
+    '''The screen of the game process itself'''
     def __init__(self, window):
         self.root = window
 
@@ -295,11 +311,13 @@ class GameScreen:
         self.return_label['image'] = self.image
 
     def return_to_main(self):
+        '''Defines the game screen'''
         self.root.game = None
         self.root.unbind('<Escape>')
         self.root.event_generate('<<Main>>')
 
     def quit(self):
+        '''Leave the game screen'''
         win = Toplevel()
         win.resizable(False, False)
         w = 200
@@ -328,6 +346,7 @@ class GameScreen:
         win.grab_set()
 
     def handle_quit(self, w):
+        '''Processing the output from the game screen'''
         w.destroy()
         if self.root.game.mode == 'online':
             asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('quit'),
@@ -337,6 +356,7 @@ class GameScreen:
         self.return_to_main()
 
     def handle_connection_error(self):
+        '''Server connection error handling'''
         win = Toplevel()
         win.resizable(False, False)
         w = 200
@@ -365,16 +385,19 @@ class GameScreen:
         win.grab_set()
 
     def handle_error(self, w):
+        '''Handling a wide range of different errors'''
         w.destroy()
         self.return_to_main()
 
     def order(self):
+        '''Disables all buttons on the field'''
         if self.root.game.turn == 'second':
             for i in range(FIELD_SIZE):
                 for j in range(FIELD_SIZE):
                     self.enemy_buttons[i][j].state(['disabled'])
 
     def update_activity(self, coord, player, status):
+        '''Updating the screen after performing an action'''
         col, row = coord
         coord = chr(ord(_('A')) + col) + str(10 - row)
 
@@ -394,6 +417,7 @@ class GameScreen:
                           .format(player=player, coord=coord, status=statuses[status]))
 
     def game_over(self):
+        '''Processing a player's loss'''
         if self.root.game.mode == 'online':
             asyncio.run_coroutine_threadsafe(self.root.game.thread.put_in_erqueue('end'),
                                              self.root.game.thread.asyncio_loop)
@@ -402,6 +426,7 @@ class GameScreen:
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
     def enemy_turn(self):
+        '''Processing the opponent's move'''
         pos = self.queue.get()
         col, row = pos
         status = self.root.game.enemy_turn((col, row))
@@ -425,6 +450,7 @@ class GameScreen:
         return status
 
     def player_turn(self, pos):
+        '''Processing a player's move'''
         col, row = pos
         status = self.root.game.player_turn((col, row))
         if self.root.game.mode == 'online':
@@ -458,6 +484,7 @@ class GameScreen:
         self.enemy_buttons[col][row].state(['disabled'])
 
     def place(self):
+        '''Placement of ships on the field'''
         self.frame.grid(column=0, row=0, sticky='nsew')
         self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
