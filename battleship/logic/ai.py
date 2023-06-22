@@ -87,6 +87,14 @@ def random_ships_matrix():
                 cells[coord[0]-1][coord[1]] = 0
             if coord[1] > 0 and cells[coord[0]][coord[1]-1] is None:
                 cells[coord[0]][coord[1]-1] = 0
+            if coord[1] > 0 and coord[0] > 0 and cells[coord[0]-1][coord[1]-1] is None:
+                cells[coord[0]-1][coord[1]-1] = 0
+            if coord[1] < 9 and coord[0] > 0 and cells[coord[0]-1][coord[1]+1] is None:
+                cells[coord[0]-1][coord[1]+1] = 0
+            if coord[1] > 0 and coord[0] < 9 and cells[coord[0]+1][coord[1]-1] is None:
+                cells[coord[0]+1][coord[1]-1] = 0
+            if coord[1] < 9 and coord[0] < 9 and cells[coord[0]+1][coord[1]+1] is None:
+                cells[coord[0]+1][coord[1]+1] = 0
         number += 1
     for i in range(len(cells)):
         for i2 in range(len(cells[i])):
