@@ -164,9 +164,7 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.field_buttons = [[MagicMock()]*10]*10
         sps.angle = 'w'
         sps.update_field()
-        for i1 in range(10):
-            for i2 in range(10):
-                assert sps.field_buttons[i1][i2].state.call_count == 100
+        assert sps.field_buttons[0][0].state.call_count == 100
 
     def test_destroy(self,
                     mock_translation, mock_battleship_util_image,
@@ -233,3 +231,14 @@ class GameScreenTestCase(unittest.TestCase):
         tec.handle_error(w)
         w.destroy.assert_called_once()
         assert tec.return_to_main.called
+
+    def test_order(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.root = MagicMock()
+        tec.root.game.turn = 'second'
+        tec.enemy_buttons = [[MagicMock()]*10]*10
+        tec.order()
+        assert tec.enemy_buttons[0][0].state.call_count == 100
