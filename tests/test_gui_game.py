@@ -93,3 +93,16 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         assert sps.root.game == None
         sps.root.unbind.assert_called_once()
         sps.root.event_generate.assert_called_once()
+
+    def test_random_place(self,
+                    mock_translation, mock_battleship_util_image,
+                    battleship_resources, battleship_logic_ai,
+                    battleship_logic):
+        sps = object.__new__(ShipPlacementScreen)
+        sps.root = MagicMock()
+        sps.ready_check = MagicMock()
+        sps.field_buttons = [[MagicMock()]*10]*10
+        sps.root.game.me.field.cells = [[0]*10]*10
+        sps.random_place()
+        sps.root.game.me.field.auto_place.assert_called_once()
+        sps.ready_check.configure.assert_called_once()
