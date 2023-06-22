@@ -6,6 +6,7 @@ TOTAL_SHIPS = 10
 
 
 class Ship:
+    '''The class defining the ship'''
     def __init__(self, size):
         self.size = size
         self.status = {}
@@ -13,10 +14,12 @@ class Ship:
         self.placed = False
 
     def hit(self, coord):
+        '''Hit on this ship'''
         self.status[coord] = True
         self.afloat = not all(self.status.values())
 
     def place(self, coords):
+        '''Installation of this ship'''
         for coord in coords:
             self.status[coord] = False
 
@@ -24,6 +27,7 @@ class Ship:
 
 
 class Field:
+    '''The class that defines the playing field'''
     def __init__(self):
         self.cells = [([0] * 10) for i in range(10)]
         self.ships = [Ship(4), Ship(3), Ship(3),
@@ -33,6 +37,7 @@ class Field:
         self.sank = []
 
     def check(self, coord):
+        '''Checking the hit on the ship'''
         hit = self.cells[coord[0]][coord[1]] > 0
         status = ''
         if hit:
@@ -50,6 +55,7 @@ class Field:
         return status
 
     def update(self, coord, status):
+        '''Cell status updates when hit'''
         if status == 'hit' or status == 'sank':
             self.cells[coord[0]][coord[1]] = -1
         else:
@@ -58,6 +64,7 @@ class Field:
         return status == 'hit' or status == 'sank'
 
     def auto_place(self):
+        '''Automatic placement of ships'''
         self.placed = 0
         self.cells = random_ships_matrix()
         ships = random_ships(self.cells)
@@ -65,12 +72,14 @@ class Field:
             self.place(ships[i + 1])
 
     def check_placed(self):
+        '''Checking whether the ship is placed'''
         for ship in self.ships:
             if not ship.placed:
                 return False
         return True
 
     def clear(self):
+        '''Clearing the list of delivered ships'''
         self.placed = 0
         self.cells = [([0] * 10) for i in range(10)]
         self.ships = [Ship(4), Ship(3), Ship(3),
@@ -78,6 +87,7 @@ class Field:
                       Ship(1), Ship(1), Ship(1), Ship(1)]
 
     def place(self, coords):
+        '''Placing the ship on the playing field'''
         for coord in coords:
             self.cells[coord[0]][coord[1]] = self.placed + 1
 
@@ -113,6 +123,7 @@ class Bot(Player):
 
 
 class Game:
+    '''Organization of the sequence of moves'''
     def __init__(self, mode, name):
         self.mode = mode
         self.me = Player(name)

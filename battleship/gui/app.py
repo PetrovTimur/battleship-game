@@ -5,11 +5,13 @@ from battleship.util import Config
 from battleship.util.image import loadImage
 from battleship.resources import icon
 from .styles import initialize_styles
-from battleship.translation import _, setLang
+from battleship.translation import setLang
 
 
 class App(Tk):
     def __init__(self):
+        '''Setting up the home screen and preparing for the
+          application'''
         super().__init__()
 
         self.title('Battleship')
@@ -42,6 +44,8 @@ class App(Tk):
         self.change_screen('Main')
 
     def change_screen(self, screen):
+        '''Changes the working window to the new onespecified in
+          the screen variable'''
         self.screen = screen
         if self.session:
             self.session.destroy()

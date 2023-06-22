@@ -8,10 +8,12 @@ from battleship.translation import _, setLang
 
 class StartScreen:
     def __init__(self, window):
+        '''Prepares the start screen'''
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
-        self.title = ttk.Label(self.frame, text=_('Welcome, {name}!').format(name=self.root.appOpts['name']), style='Big.Blue.TLabel')
+        self.title = ttk.Label(self.frame, text=_('Welcome, {name}!')
+                               .format(name=self.root.appOpts['name']), style='Big.Blue.TLabel')
 
         self.buttonsConfig = [
             {
@@ -31,11 +33,13 @@ class StartScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.Blue.TButton', **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False,
+                                           style='Big.Blue.TButton', **buttonConfig))
 
         self.place()
 
     def place(self):
+        '''Arrangement of interface elements'''
         self.frame.grid(column=0, row=0, sticky='nsew')
         self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
@@ -51,12 +55,15 @@ class StartScreen:
 
 
 class SettingsScreen:
+    '''Setup Screen'''
     def __init__(self, window):
+        '''Preparing the setup screen'''
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
         self.title = ttk.Label(self.frame, text=_('Settings'), style='Big.Blue.TLabel')
-        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center',
+                                      anchor='center', compound='left', style='Blue.TLabel')
 
         self.settings_frame = ttk.Frame(self.frame, style='Bluer.TFrame', relief='groove')
 
@@ -67,7 +74,8 @@ class SettingsScreen:
             textvariable=self.name)
 
         self.resolution = StringVar(self.frame, self.root.appOpts['resolution'])
-        self.resolution_options = ['640x360', '960x540', '1280x720', '1600x900', '1920x1080', '2560x1440']
+        self.resolution_options = ['640x360', '960x540', '1280x720', '1600x900', '1920x1080',
+                                   '2560x1440']
         self.resolution_menu = ttk.OptionMenu(
             self.settings_frame,
             self.resolution,
@@ -78,7 +86,8 @@ class SettingsScreen:
 
         self.resolution_menu['menu'].config(bg='#cfe2f3', activebackground='#6fa8dc')
 
-        self.fullscreen = BooleanVar(self.settings_frame, self.root.appOpts.getboolean('fullscreen'))
+        self.fullscreen = BooleanVar(self.settings_frame,
+                                     self.root.appOpts.getboolean('fullscreen'))
         self.fullscreen_button = Checkbutton(
             self.settings_frame,
             variable=self.fullscreen,
@@ -127,6 +136,7 @@ class SettingsScreen:
         self.return_label['image'] = self.image
 
     def set_fullscreen(self):
+        '''Changing the window size to full screen'''
         if self.fullscreen.get():
             width = self.root.winfo_screenwidth()
             height = self.root.winfo_screenheight()
@@ -137,11 +147,13 @@ class SettingsScreen:
             self.root.attributes('-fullscreen', False)
 
     def set_language(self):
+        '''Changing the in-game localization'''
         self.root.appOpts['language'] = self.language.get()
         setLang(self.root.appOpts["language"])
         self.root.event_generate('<<Settings>>')
 
     def return_to_main(self):
+        '''Return to the start screen'''
         self.root.unbind('<Escape>')
 
         settings = {'name': self.name.get(),
@@ -156,6 +168,7 @@ class SettingsScreen:
         self.root.event_generate('<<Main>>')
 
     def place(self):
+        '''Arrangement of interface elements'''
         self.frame.grid(column=0, row=0, sticky='nsew')
         self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
@@ -181,13 +194,16 @@ class SettingsScreen:
 
 
 class NewGameSetupScreen:
+    '''Window for starting a new game'''
     def __init__(self, window):
+        '''Prepares a new game window'''
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
 
         self.title = ttk.Label(self.frame, text=_('Choose game mode'), style='Big.Blue.TLabel')
-        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center', anchor='center', compound='left', style='Blue.TLabel')
+        self.return_label = ttk.Label(self.frame, text=_('Return'), justify='center',
+                                      anchor='center', compound='left', style='Blue.TLabel')
 
         self.buttonsConfig = [
             {
@@ -202,7 +218,8 @@ class NewGameSetupScreen:
         self.buttons = []
 
         for buttonConfig in self.buttonsConfig:
-            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.Blue.TButton', **buttonConfig))
+            self.buttons.append(ttk.Button(self.frame, takefocus=False, style='Big.Blue.TButton',
+                                           **buttonConfig))
 
         self.root.bind('<Escape>', lambda e: self.return_to_main())
 
@@ -213,10 +230,12 @@ class NewGameSetupScreen:
         self.return_label['image'] = self.image
 
     def return_to_main(self):
+        '''Return to the start screen'''
         self.root.unbind('<Escape>')
         self.root.event_generate('<<Main>>')
 
     def start_game(self, mode):
+        '''Go to the game window'''
         self.root.game = Game(mode, self.root.appOpts['name'])
 
         self.root.event_generate('<<ShipPlacement>>')
@@ -224,6 +243,7 @@ class NewGameSetupScreen:
     # TODO add more game settings
 
     def place(self):
+        '''Arrangement of interface elements'''
         self.frame.grid(column=0, row=0, sticky='nsew')
         self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
