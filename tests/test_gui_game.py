@@ -1,4 +1,4 @@
-from battleship.gui.game import ShipPlacementScreen
+from battleship.gui.game import ShipPlacementScreen, GameScreen
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
@@ -176,3 +176,20 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.frame = MagicMock()
         sps.destroy()
         sps.frame.destroy.assert_called_once()
+
+
+@patch('battleship.logic')
+@patch('battleship.logic.ai')
+@patch('battleship.resources')
+@patch('battleship.util.image')
+@patch('battleship.translation')
+class ShipPlacementScreenTestCase(unittest.TestCase):
+
+        def test_return_to_main(self,
+                              mock_translation, mock_battleship_util_image,
+                              battleship_resources, battleship_logic_ai,
+                              battleship_logic):
+            tec = object.__new__(GameScreen)
+            tec.root = MagicMock()
+            tec.return_to_main()
+            assert tec.root.game == None
