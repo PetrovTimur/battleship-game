@@ -214,3 +214,11 @@ class GameScreenTestCase(unittest.TestCase):
         tec.handle_quit(w)
         tec.queue.put.assert_called_once()
         w.destroy.assert_called_once()
+
+    def test_handle_connection_error(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.root = MagicMock()
+        tec.handle_connection_error()
