@@ -39,3 +39,21 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.ready()
         sps.is_ready.get.assert_called_once()
         assert sps.root.game.thread.name == 'Thread-1 (play)'
+
+
+#### Вылезает ошибка!!!
+    '''
+    def test_ready2(self,
+                    mock_translation, mock_battleship_util_image,
+                    battleship_resources, battleship_logic_ai,
+                    battleship_logic):
+        battleship_logic.AsyncioThread = MagicMock()
+        sps = object.__new__(ShipPlacementScreen)
+        sps.root = MagicMock()
+        sps.is_ready = MagicMock()
+        sps.is_ready.get = MagicMock(return_value=True)
+        sps.root.game.mode = 'notsingle'
+        sps.ready()
+        sps.is_ready.get.assert_called_once()
+        assert sps.root.game.thread.name == 'Thread-2'
+    '''
