@@ -31,4 +31,4 @@ build-backend = "setuptools.build_meta"
 battleship = "battleship"
 
 [tool.setuptools.package-data]
-battleship = ["translation/ru/*/*.mo"]
+battleship = ["translation/ru/*/*.mo", "resources/images/*"]
