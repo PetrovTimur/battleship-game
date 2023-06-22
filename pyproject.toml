@@ -7,10 +7,10 @@ requires-python = ">=3.10"
 license = {file = "COPYING"}
 authors = [
  {name = "Timur Petrov", email = "s02200459@gse.cs.msu.ru"},
- {name = "Neil Nenakhov", email = ""}
+ {name = "Neil Nenakhov", email = "mail@example.com"}
 ]
 
-keywords = ["tkinter", "project"]
+keywords = ["tkinter", "asyncio", "project"]
 classifiers = [
       "Development Status :: 4 - Beta",
       "Programming Language :: Python :: 3",
@@ -21,7 +21,7 @@ classifiers = [
 dependencies = ["Sphinx", "doit", "flake8", "pydocstyle", "wheel", "setuptools", "pillow"]
 
 [project.gui-scripts]
-battleship = "battleship:main"
+play-battleship = "battleship:main"
 
 [build-system]
 requires = ["Sphinx", "build", "doit", "flake8", "pydocstyle", "setuptools"]
@@ -31,4 +31,4 @@ build-backend = "setuptools.build_meta"
 battleship = "battleship"
 
 [tool.setuptools.package-data]
-battleship = ["battleship/translation/ru/*/*.mo"]
+battleship = ["translation/ru/*/*.mo"]

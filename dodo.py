@@ -71,5 +71,13 @@ def task_docstyle():
 def task_gitclean():
     """Clean all generated files not tracked by GIT."""
     return {
-            'actions': ['git clean -xdf'],
+            'actions': ['git clean -Xdf'],
+           }
+
+
+def task_wheel():
+    """Create binary wheel distribution."""
+    return {
+            'actions': ['python -m build -n -w'],
+            'task_dep': ['mo'],
            }

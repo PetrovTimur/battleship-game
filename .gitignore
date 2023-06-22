@@ -1,0 +1,12 @@
+*~
+*.bak
+*.orig
+Pipfile.*
+__pycache__
+build
+dist
+*.pot
+*.mo
+.doit*
+*.egg-info
+config.ini
