@@ -275,3 +275,14 @@ class GameScreenTestCase(unittest.TestCase):
         tec.root.game.me.name = 'Nil'
         tec.update_activity((1,1), 'Nil', 'hit')
         tec.activity.set.assert_called_once()
+
+    def test_game_over(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.root = MagicMock()
+        tec.queue = MagicMock()
+        tec.game_over()
+        tec.queue.put.assert_called_once()
+        tec.root.bind.assert_called_once()
