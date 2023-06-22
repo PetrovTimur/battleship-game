@@ -242,3 +242,36 @@ class GameScreenTestCase(unittest.TestCase):
         tec.enemy_buttons = [[MagicMock()]*10]*10
         tec.order()
         assert tec.enemy_buttons[0][0].state.call_count == 100
+
+    def test_update_activity1(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.activity = MagicMock()
+        tec.root = MagicMock()
+        tec.root.game.me.name = 'Nil'
+        tec.update_activity((1,1), 'Nil', 'dead')
+        tec.activity.set.assert_called_once()
+
+    def test_update_activity2(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.activity = MagicMock()
+        tec.root = MagicMock()
+        tec.root.game.me.name = 'mashine'
+        tec.update_activity((1,1), 'Nil', 'dead')
+        tec.activity.set.assert_called_once()
+
+    def test_update_activity3(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.activity = MagicMock()
+        tec.root = MagicMock()
+        tec.root.game.me.name = 'Nil'
+        tec.update_activity((1,1), 'Nil', 'hit')
+        tec.activity.set.assert_called_once()
