@@ -141,7 +141,6 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.field_frame.rowconfigure.assert_called_once()
         sps.field_frame.columnconfigure.assert_called_once()
 
-
     def test_rotate(self,
                     mock_translation, mock_battleship_util_image,
                     battleship_resources, battleship_logic_ai,
@@ -156,3 +155,15 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.rotate(event,(1,1))
         assert sps.leave.called
         assert sps.hover.called
+    
+    def test_update_field(self,
+                    mock_translation, mock_battleship_util_image,
+                    battleship_resources, battleship_logic_ai,
+                    battleship_logic):
+        sps = object.__new__(ShipPlacementScreen)
+        sps.field_buttons = [[MagicMock()]*10]*10
+        sps.angle = 'w'
+        sps.update_field()
+        for i1 in range(10):
+            for i2 in range(10):
+                assert sps.field_buttons[i1][i2].state.call_count == 100
