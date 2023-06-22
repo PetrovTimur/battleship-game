@@ -332,3 +332,33 @@ class GameScreenTestCase(unittest.TestCase):
         tec.queue.put.assert_called_once()
         tec.update_activity.assert_called_once()
         tec.enemy_buttons[0][0].state.assert_called()
+
+    def test_place(self,
+                            mock_translation, mock_battleship_util_image,
+                            battleship_resources, battleship_logic_ai,
+                            battleship_logic):
+        tec = object.__new__(GameScreen)
+        tec.frame = MagicMock()
+        tec.player_label = MagicMock()
+        tec.enemy_label = MagicMock()
+        tec.return_label = MagicMock()
+        tec.activity_label = MagicMock()
+        tec.player_field = MagicMock()
+        tec.enemy_field = MagicMock()
+        tec.player_row_labels = [MagicMock()]*10
+        tec.player_col_labels = [MagicMock()]*10
+        tec.enemy_row_labels = [MagicMock()]*10
+        tec.enemy_col_labels = [MagicMock()]*10
+        tec.player_buttons = [[MagicMock()]*10]*10
+        tec.enemy_buttons = [[MagicMock()]*10]*10
+        tec.place()
+        assert tec.player_buttons[1][1].grid.call_count == 100
+        assert tec.enemy_buttons[1][1].grid.call_count == 100
+        assert tec.player_row_labels[1].grid.call_count == 10
+        assert tec.player_col_labels[1].grid.call_count == 10
+        assert tec.enemy_row_labels[1].grid.call_count == 10
+        assert tec.enemy_col_labels[1].grid.call_count == 10
+        tec.player_field.rowconfigure.assert_called_once()
+        tec.player_field.player_field.columnconfigure()
+        tec.player_field.renemy_field.rowconfigure()
+        tec.player_field.enemy_field.columnconfigure()
