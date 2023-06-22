@@ -120,3 +120,23 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.root.game.me.field.clear.assert_called_once()
         sps.is_ready.set.assert_called_once()
         sps.ready_check.configure.assert_called_once()
+
+    def test_place(self,
+                    mock_translation, mock_battleship_util_image,
+                    battleship_resources, battleship_logic_ai,
+                    battleship_logic):
+        sps = object.__new__(ShipPlacementScreen)
+        sps.root = MagicMock()
+        sps.frame = MagicMock()
+        sps.title = MagicMock()
+        sps.field_frame = MagicMock()
+        sps.random_button = MagicMock()
+        sps.clear_button = MagicMock()
+        sps.ready_check = MagicMock()
+        sps.message_label = MagicMock()
+        sps.return_label = MagicMock()
+        sps.field_buttons = [[MagicMock()]*10]*10
+        sps.place()
+        sps.field_frame.grid_propagate.assert_called_once()
+        sps.field_frame.rowconfigure.assert_called_once()
+        sps.field_frame.columnconfigure.assert_called_once()
