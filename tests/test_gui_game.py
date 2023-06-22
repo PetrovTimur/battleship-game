@@ -72,3 +72,13 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.ready()
         assert(sps.root.game.thread == None)
         assert(sps.root.game.queue == None)
+
+
+    def test_start_game(self,
+                    mock_translation, mock_battleship_util_image,
+                    battleship_resources, battleship_logic_ai,
+                    battleship_logic):
+        sps = object.__new__(ShipPlacementScreen)
+        sps.root = MagicMock()
+        sps.start_game()
+        sps.root.event_generate.assert_called_once()
