@@ -1,7 +1,10 @@
+"""Widget styles setup."""
+
 from tkinter import ttk
 
 
 def initialize_styles():
+    """Initialize widget styles."""
     style = ttk.Style()
     style.theme_use('default')
 

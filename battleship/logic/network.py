@@ -1,13 +1,18 @@
+"""Multiplayer features."""
+
 import asyncio
 import threading
 import pickle
 
-# SERVER_IP = '40.91.223.121'
-SERVER_IP = '127.0.0.1'
+SERVER_IP = '40.91.223.121'
+# SERVER_IP = '127.0.0.1'
 
 
 class AsyncioThread(threading.Thread):
+    """Thread to handle networking during game."""
+
     def __init__(self, game, screen):
+        """Initialize all params."""
         self.asyncio_loop = asyncio.get_event_loop()
         self.queue = game.queue
         self.screen = screen
@@ -20,24 +25,30 @@ class AsyncioThread(threading.Thread):
         super().__init__(daemon=True)
 
     def update_screen(self, screen):
+        """Get the new screen."""
         self.screen = screen
 
     def run(self):
+        """Start the thread."""
         self.asyncio_loop.run_until_complete(self.play())
 
     async def connect(self):
+        """Connect to server."""
         try:
             self.reader, self.writer = await asyncio.open_connection(SERVER_IP, 8888)
         except ConnectionError:
             self.status = False
 
     async def put_in_queue(self, data):
+        """Put in regular queue."""
         await self.aqueue.put(data)
 
     async def put_in_erqueue(self, data):
+        """Put in error queue."""
         await self.erqueue.put(data)
 
     async def handle_tech_data(self):
+        """Receive and send technical data."""
         data = await self.reader.read(100)
         turn = data.decode()
         self.queue.put(turn)
@@ -51,6 +62,7 @@ class AsyncioThread(threading.Thread):
         self.queue.put(enemy)
 
     async def play(self):
+        """Start the game."""
         await self.connect()
 
         if not self.status:
@@ -120,6 +132,3 @@ class AsyncioThread(threading.Thread):
 
         self.writer.close()
         await self.writer.wait_closed()
-
-# TODO send eof from server (?)
-# TODO disconnect properly after Esc (?)

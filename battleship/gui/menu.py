@@ -1,3 +1,5 @@
+"""All menu screens."""
+
 from tkinter import StringVar, BooleanVar, Checkbutton
 from tkinter import ttk
 from battleship.logic.game import Game
@@ -7,8 +9,10 @@ from battleship.translation import _, setLang
 
 
 class StartScreen:
+    """Main screen of the app."""
+
     def __init__(self, window):
-        '''Prepares the start screen'''
+        """Initialize all widgets."""
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
@@ -39,7 +43,7 @@ class StartScreen:
         self.place()
 
     def place(self):
-        '''Arrangement of interface elements'''
+        """Place widgets on screen."""
         self.frame.grid(column=0, row=0, sticky='nsew')
         self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
@@ -51,13 +55,15 @@ class StartScreen:
             self.buttons[i].grid(column=5, row=2 * (i + 1), columnspan=6, rowspan=2, sticky='nsew')
 
     def destroy(self):
+        """Destroy main frame."""
         self.frame.destroy()
 
 
 class SettingsScreen:
-    '''Setup Screen'''
+    """Screen to choose preferred settings."""
+
     def __init__(self, window):
-        '''Preparing the setup screen'''
+        """Initialize all widgets."""
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
@@ -136,7 +142,7 @@ class SettingsScreen:
         self.return_label['image'] = self.image
 
     def set_fullscreen(self):
-        '''Changing the window size to full screen'''
+        """Change fullscreen mode setting."""
         if self.fullscreen.get():
             width = self.root.winfo_screenwidth()
             height = self.root.winfo_screenheight()
@@ -147,13 +153,13 @@ class SettingsScreen:
             self.root.attributes('-fullscreen', False)
 
     def set_language(self):
-        '''Changing the in-game localization'''
+        """Change language."""
         self.root.appOpts['language'] = self.language.get()
         setLang(self.root.appOpts["language"])
         self.root.event_generate('<<Settings>>')
 
     def return_to_main(self):
-        '''Return to the start screen'''
+        """Return to the main screen."""
         self.root.unbind('<Escape>')
 
         settings = {'name': self.name.get(),
@@ -168,7 +174,7 @@ class SettingsScreen:
         self.root.event_generate('<<Main>>')
 
     def place(self):
-        '''Arrangement of interface elements'''
+        """Place widgets on screen."""
         self.frame.grid(column=0, row=0, sticky='nsew')
         self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
@@ -190,13 +196,15 @@ class SettingsScreen:
             self.labels[i].grid(column=0, row=i, columnspan=2)
 
     def destroy(self):
+        """Destroy main frame."""
         self.frame.destroy()
 
 
 class NewGameSetupScreen:
-    '''Window for starting a new game'''
+    """Screen to choose the game mode."""
+
     def __init__(self, window):
-        '''Prepares a new game window'''
+        """Initialize all widgets."""
         self.root = window
 
         self.frame = ttk.Frame(self.root, style='Blue.TFrame')
@@ -230,20 +238,18 @@ class NewGameSetupScreen:
         self.return_label['image'] = self.image
 
     def return_to_main(self):
-        '''Return to the start screen'''
+        """Return to main screen."""
         self.root.unbind('<Escape>')
         self.root.event_generate('<<Main>>')
 
     def start_game(self, mode):
-        '''Go to the game window'''
+        """Initialize the game and switch screens."""
         self.root.game = Game(mode, self.root.appOpts['name'])
 
         self.root.event_generate('<<ShipPlacement>>')
 
-    # TODO add more game settings
-
     def place(self):
-        '''Arrangement of interface elements'''
+        """Place widgets on screen."""
         self.frame.grid(column=0, row=0, sticky='nsew')
         self.frame.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8), weight=1, minsize=40)
         self.frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
@@ -256,4 +262,5 @@ class NewGameSetupScreen:
             self.buttons[i].grid(column=(5 * i + 3), row=3, columnspan=5, rowspan=2, sticky='nsew')
 
     def destroy(self):
+        """Destroy main frame."""
         self.frame.destroy()

@@ -1,10 +1,12 @@
+"""AI features."""
+
 from random import randint, uniform, choice
 import threading
 import time
 
 
 def shot(cells) -> (int, int):
-    '''Shot on the playing field'''
+    """Shoot at random available cell."""
     time.sleep(uniform(1.5, 2.5))
     coords = randint(0, 9), randint(0, 9)
     while cells[coords[0]][coords[1]] < 0:
@@ -14,7 +16,7 @@ def shot(cells) -> (int, int):
 
 
 def get_coords(position, size, angle, field=None):
-    '''Getting a list of coordinates for a ship of a given size, in a given direction'''
+    """Get a list of coordinates for a ship."""
     angles = {'w': (-1, 0),
               'n': (0, 1),
               'e': (1, 0),
@@ -38,7 +40,7 @@ def get_coords(position, size, angle, field=None):
 
 
 def surrounding(coords):
-    '''getting the coordinates of cells in the neighborhood of a given'''
+    """Get neighboring coordinates of a ship."""
     surr = []
     for coord in coords:
         for dx in [-1, 0, 1]:
@@ -52,7 +54,7 @@ def surrounding(coords):
 
 
 def random_ships_matrix():
-    '''Builds a playing field with randomly placed ships'''
+    """Build a playing field with randomly placed ships."""
     sizes = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
     number = 1
     cells = [[None]*10 for _ in range(10)]
@@ -104,7 +106,7 @@ def random_ships_matrix():
 
 
 def random_ships(cells):
-    '''Coordinates of randomly placed ships'''
+    """Get coordinates of placed ships."""
     ships_coords = {}
     for i in range(10):
         coords = []
@@ -117,8 +119,10 @@ def random_ships(cells):
 
 
 class BotThread(threading.Thread):
-    '''A class that defines the behavior of the bot'''
+    """Playing thread for the AI."""
+
     def __init__(self, game, screen):
+        """Initialize all params."""
         self.queue = game.queue
         self.screen = screen
         self.status = True
@@ -126,14 +130,15 @@ class BotThread(threading.Thread):
         super().__init__(target=self.play, daemon=True)
 
     def update_screen(self, screen):
-        '''Initializing the bot'''
+        """Get the new screen."""
         self.screen = screen
 
     def run(self):
+        """Start the thread."""
         super().run()
 
     def shoot(self):
-        '''Bot shot'''
+        """Shoot at the player."""
         try:
             pos, status = self.queue.get()
         except ValueError:
@@ -146,7 +151,7 @@ class BotThread(threading.Thread):
         return status == 'hit' or status == 'sank'
 
     def get_shot(self):
-        '''Hitting a ship on the playing field'''
+        """Get shot by the player."""
         pos = shot(self.game.me.field.cells)
         self.queue.put(pos)
         try:
@@ -161,7 +166,7 @@ class BotThread(threading.Thread):
         return status == 'hit' or status == 'sank'
 
     def play(self):
-        '''Organizing a game with a bot'''
+        """Start the game."""
         turn = choice(['first', 'second'])
         self.queue.put(turn)
         self.screen.start_game()
