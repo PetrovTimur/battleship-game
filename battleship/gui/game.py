@@ -382,7 +382,7 @@ class GameScreen:
         question_label.grid(column=0, row=0, columnspan=2, rowspan=2)
 
         ok_button = ttk.Button(win, text=_('Ok'), takefocus=False, command=lambda window=win:
-                               self.ection_error(window))
+                               self.handle_connection_error(window))
         ok_button.grid(column=0, row=2, rowspan=2, columnspan=2)
 
         win.protocol("WM_DELETE_WINDOW", lambda window=win: self.handle_connection_error(window))
