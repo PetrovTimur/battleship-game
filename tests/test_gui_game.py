@@ -1,6 +1,7 @@
 from battleship.gui.game import ShipPlacementScreen, GameScreen
 import unittest
 from unittest.mock import MagicMock, patch
+from battleship.translation import get_translation
 
 
 @patch('battleship.logic')
@@ -86,7 +87,7 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps = object.__new__(ShipPlacementScreen)
         sps.root = MagicMock()
         sps.return_to_main()
-        assert sps.root.game is not None
+        assert sps.root.game is None
         sps.root.unbind.assert_called_once()
         sps.root.event_generate.assert_called_once()
 
@@ -178,6 +179,9 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
 @patch('battleship.util.image')
 @patch('battleship.translation')
 class GameScreenTestCase(unittest.TestCase):
+    def setUp(self):
+        get_translation()
+
     def test_return_to_main(self,
                             mock_translation, mock_battleship_util_image,
                             battleship_resources, battleship_logic_ai,
@@ -214,17 +218,9 @@ class GameScreenTestCase(unittest.TestCase):
                                      battleship_resources, battleship_logic_ai,
                                      battleship_logic):
         tec = object.__new__(GameScreen)
-        tec.root = MagicMock()
-        tec.handle_connection_error()
-
-    def test_handle_error(self,
-                          mock_translation, mock_battleship_util_image,
-                          battleship_resources, battleship_logic_ai,
-                          battleship_logic):
-        tec = object.__new__(GameScreen)
         tec.return_to_main = MagicMock()
         w = MagicMock()
-        tec.handle_error(w)
+        tec.handle_connection_error(w)
         w.destroy.assert_called_once()
         assert tec.return_to_main.called
 
