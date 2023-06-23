@@ -88,3 +88,10 @@ def task_sdist():
             'actions': ['python -m build -s -n'],
             'task_dep': ['gitclean'],
            }
+
+
+def task_html():
+    """Make HTML documentation."""
+    return {
+            'actions': ['sphinx-build -M html docs build'],
+           }
