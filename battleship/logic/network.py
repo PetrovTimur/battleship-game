@@ -106,7 +106,7 @@ class AsyncioThread(threading.Thread):
                         self.screen.frame.event_generate('<<EnemyTurn>>')
                     except EOFError:
                         connected = False
-                        self.screen.handle_connection_error()
+                        self.screen.connection_error()
                 elif q is send_to_server:
                     send_to_server = asyncio.create_task(self.aqueue.get())
                     data = q.result()
