@@ -2,7 +2,6 @@
 
 import glob
 from doit.tools import create_folder
-from doit import create_after
 
 DOIT_CONFIG = {'default_tasks': ['app']}
 
@@ -93,5 +92,5 @@ def task_sdist():
 def task_html():
     """Make HTML documentation."""
     return {
-            'actions': ['sphinx-build -M html docs build'],
+            'actions': ['sphinx-build -M html docs docs/build'],
            }
