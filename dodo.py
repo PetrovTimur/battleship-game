@@ -9,9 +9,9 @@ DOIT_CONFIG = {'default_tasks': ['app']}
 def task_test():
     """Perform tests."""
     return {
-            'actions': ['python3 -m unittest discover tests'],
-            'task_dep': ['mo'],
-           }
+        'actions': ['python3 -m unittest discover tests'],
+        'task_dep': ['mo']
+    }
 
 
 def task_pot():

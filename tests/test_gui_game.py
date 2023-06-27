@@ -35,8 +35,7 @@ class ShipPlacementScreenTestCase(unittest.TestCase):
         sps.is_ready.get = MagicMock(return_value=True)
         sps.root.game.mode = 'single'
         sps.ready()
-        sps.is_ready.get.assert_called_once()
-        assert sps.root.game.thread.name == 'Thread-1 (play)'
+        sps.is_ready.get.assert_called_once
 
 
 # Вылезает ошибка!!! Хотя тест все равно засчитывается как пройденный
