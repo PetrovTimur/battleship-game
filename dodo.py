@@ -94,4 +94,5 @@ def task_html():
     """Make HTML documentation."""
     return {
             'actions': ['sphinx-build -M html docs docs/build'],
+            'verbosity': 2,
            }
