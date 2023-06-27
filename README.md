@@ -46,6 +46,10 @@
 - Для создания sphinx документации: `doit html`
 - Сборка wheel `doit wheel`
 
+### Документация
+
+Документацию можно посмотреть [здесь](https://battleship.readthedocs.io/).
+
 ### Запуск 
 
 Требования: Python version >= 3.10
