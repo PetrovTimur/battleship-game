@@ -18,12 +18,20 @@ class Ship:
         self.placed = False
 
     def hit(self, coord):
-        """Record hit at the ship."""
+        """
+        Record hit at the ship.
+
+        :param coord: Coordinate of the shot.
+        """
         self.status[coord] = True
         self.afloat = not all(self.status.values())
 
     def place(self, coords):
-        """Save ship coordinates."""
+        """
+        Save ship coordinates.
+
+        :param coords: Ship coordinates.
+        """
         for coord in coords:
             self.status[coord] = False
 
@@ -43,7 +51,11 @@ class Field:
         self.sank = []
 
     def check(self, coord):
-        """Check cell status."""
+        """
+        Check cell status.
+
+        :param coord: Coordinate to check.
+        """
         hit = self.cells[coord[0]][coord[1]] > 0
         status = ''
         if hit:
@@ -61,7 +73,14 @@ class Field:
         return status
 
     def update(self, coord, status):
-        """Update cell status."""
+        """
+        Update cell status.
+
+        :param coord: Coordinate to update.
+        :param status: Status to apply.
+        :returns: Whether the ship was hit.
+        :rtype: bool
+        """
         if status == 'hit' or status == 'sank':
             self.cells[coord[0]][coord[1]] = -1
         else:
@@ -93,7 +112,11 @@ class Field:
                       Ship(1), Ship(1), Ship(1), Ship(1)]
 
     def place(self, coords):
-        """Place the ship on the playing field."""
+        """
+        Place the ship on the playing field.
+
+        :param coords: Ship coordinates.
+        """
         for coord in coords:
             self.cells[coord[0]][coord[1]] = self.placed + 1
 
@@ -116,7 +139,11 @@ class Player:
         self.alive = any(ship.afloat for ship in self.field.ships)
 
     def update_field(self, coord):
-        """Update player's field."""
+        """
+        Update player's field.
+
+        :param coord: Coordinate to update.
+        """
         hit = self.field.check(coord)
 
         self.update_status()
@@ -152,9 +179,17 @@ class Game:
         self.turn = None
 
     def player_turn(self, cell):
-        """Process player's turn."""
+        """
+        Process player's turn.
+
+        :param cell: Shot coordinates.
+        """
         return self.enemy.update_field(cell)
 
     def enemy_turn(self, cell):
-        """Process opponent's turn."""
+        """
+        Process opponent's turn.
+
+        :param cell: Shot coordinates.
+        """
         return self.me.update_field(cell)

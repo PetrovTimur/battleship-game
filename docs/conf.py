@@ -27,4 +27,21 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'alabaster'
+
+html_sidebars = {
+    '**': [
+        'about.html',
+        'relations.html',
+        'searchbox.html',
+        'donate.html',
+    ]
+}
+
+html_theme_options = {
+    'logo': 'icon.png',
+    'github_button': True,
+    'github_user': 'PetrovTimur',
+    'github_repo': 'battleship-game',
+}
+
 html_static_path = ['_static']

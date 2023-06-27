@@ -5,8 +5,13 @@ import threading
 import time
 
 
-def shot(cells) -> (int, int):
-    """Shoot at random available cell."""
+def shot(cells):
+    """
+    Shoot at random available cell.
+
+    :param cells: Player's field.
+    :returns: A tuple, containing coordinates.
+    """
     time.sleep(uniform(1.5, 2.5))
     coords = randint(0, 9), randint(0, 9)
     while cells[coords[0]][coords[1]] < 0:
@@ -16,7 +21,17 @@ def shot(cells) -> (int, int):
 
 
 def get_coords(position, size, angle, field=None):
-    """Get a list of coordinates for a ship."""
+    """
+    Get a list of coordinates for a ship.
+
+    :param position: Starting coordinate of the ship.
+    :param size: Size of the ship.
+    :param angle: Angle of the ship extension.
+    :param field: Player's field.
+
+    :returns: Coordinates of the ship.
+    :rtype: list
+    """
     angles = {'w': (-1, 0),
               'n': (0, 1),
               'e': (1, 0),
@@ -106,7 +121,12 @@ def random_ships_matrix():
 
 
 def random_ships(cells):
-    """Get coordinates of placed ships."""
+    """
+    Get coordinates of placed ships.
+
+    :param cells: Player's field.
+    :returns: dict
+    """
     ships_coords = {}
     for i in range(10):
         coords = []

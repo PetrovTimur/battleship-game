@@ -9,8 +9,9 @@ DOIT_CONFIG = {'default_tasks': ['app']}
 def task_test():
     """Perform tests."""
     return {
-        'actions': ['python3 -m unittest discover tests']
-    }
+            'actions': ['python3 -m unittest discover tests'],
+            'task_dep': ['mo'],
+           }
 
 
 def task_pot():
@@ -93,4 +94,5 @@ def task_html():
     """Make HTML documentation."""
     return {
             'actions': ['sphinx-build -M html docs docs/build'],
+            'verbosity': 2,
            }
