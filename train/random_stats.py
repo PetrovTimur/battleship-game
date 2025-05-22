@@ -59,10 +59,11 @@ def main():
 
     # Line plot (bottom, spanning both columns)
     ax3 = fig.add_subplot(gs[1, :])
-    ax3.plot(moves_list, marker='.', linestyle='-', alpha=0.5, label='Moves per Game')
+    ax3.plot(moves_list, marker='.', linestyle='None', alpha=0.5, label='Moves per Game')
+    ax3.set_ylim(bottom=30, top=100)
 
     # Running average
-    window = 50
+    window = 20
     if len(moves_list) >= window:
         running_avg = [sum(moves_list[max(0, i-window+1):i+1]) / (i - max(0, i-window+1) + 1) for i in range(len(moves_list))]
         ax3.plot(running_avg, color='red', linewidth=2, label=f'Running Avg (window={window})')
