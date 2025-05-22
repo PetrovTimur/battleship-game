@@ -1,10 +1,13 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from train.train import DQN, BattleshipEnv, device
+from env import BattleshipEnv
+from models import DQN
+
 
 # Load trained model
-checkpoint_path = 'dqn_battleship_masked2.pth'
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+checkpoint_path = 'checkpoints/dqn_battleship1_5000.pt'
 env = BattleshipEnv()
 policy_net = DQN(n_actions=env.n_actions).to(device)
 policy_net.load_state_dict(torch.load(checkpoint_path, map_location=device))
