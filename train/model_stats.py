@@ -1,15 +1,20 @@
-# train/evaluate_model.py
-
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
-from train.train import DQN, BattleshipEnv, device
+from env import BattleshipEnv
+from models import DQN
+
+
+# Load trained model
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def evaluate(n_games=100):
     # Load model
+    checkpoint_path = 'checkpoints/dqn_battleship1_5000.pt'
     env = BattleshipEnv()
     policy_net = DQN(n_actions=env.n_actions).to(device)
-    policy_net.load_state_dict(torch.load('dqn_battleship_masked2.pth', map_location=device))
+    # policy_net.load_state_dict(torch.load('dqn_battleship_masked2.pth', map_location=device))
+    policy_net.load_state_dict(torch.load(checkpoint_path, map_location=device))
     policy_net.eval()
 
     moves_list = []
@@ -51,7 +56,8 @@ def evaluate(n_games=100):
     ax2.set_ylabel('Moves')
 
     ax3 = fig.add_subplot(gs[1, :])
-    ax3.plot(moves_list, marker='.', linestyle='-', alpha=0.5, label='Moves per Game')
+    ax3.plot(moves_list, marker='.', linestyle='None', alpha=0.5, label='Moves per Game')
+    ax3.set_ylim(bottom=30, top=100)
     window = 20
     if n_games >= window:
         running_avg = [np.mean(moves_list[max(0, i-window+1):i+1]) for i in range(len(moves_list))]
@@ -65,4 +71,4 @@ def evaluate(n_games=100):
     plt.show()
 
 if __name__ == "__main__":
-    evaluate(n_games=100)
+    evaluate(n_games=1000)
