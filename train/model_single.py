@@ -4,20 +4,18 @@ import matplotlib.pyplot as plt
 from env import BattleshipEnv
 from models import DQN
 
-
 # Load trained model
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-checkpoint_path = 'checkpoints/dqn_battleship1_5000.pt'
+checkpoint_path = 'checkpoints/ppo_1.pt'
 env = BattleshipEnv()
-policy_net = DQN(n_actions=env.n_actions).to(device)
+policy_net = DQN(n_actions=env.size * env.size).to(device)
 policy_net.load_state_dict(torch.load(checkpoint_path, map_location=device))
 policy_net.eval()
 
 print(sum(p.numel() for p in policy_net.parameters()))
-# optimizer = optim.Adam(policy_net.parameters(), lr=1e-3)
 
-obs = env.reset()
-state = torch.tensor(obs, device=device).unsqueeze(0)
+obs, info = env.reset()
+state = torch.tensor(obs["observation"], device=device).unsqueeze(0)
 done = False
 shot_order = np.zeros((env.size, env.size), dtype=int)
 step = 1
@@ -26,20 +24,23 @@ while not done:
     with torch.no_grad():
         q = policy_net(state)
         mask = torch.full_like(q, float('-inf'))
-        mask[0, env.legal_actions()] = 0
+        legal_mask = torch.tensor(obs["mask"], dtype=torch.bool, device=device)
+        mask[0, legal_mask] = 0
         action = (q + mask).argmax(1).item()
     x, y = divmod(action, env.size)
     shot_order[x, y] = step
     step += 1
-    obs2, reward, done = env.step(action)
-    state = torch.tensor(obs2, device=device).unsqueeze(0) if not done else None
+    obs2, reward, terminated, truncated, info = env.step(action)
+    done = terminated or truncated
+    if not done:
+        state = torch.tensor(obs2["observation"], device=device).unsqueeze(0)
+        obs = obs2
 
 # Get ship positions
 ship_mask = np.zeros((env.size, env.size), dtype=bool)
 for ship in env.field.ships:
     for (x, y) in ship.status.keys():
         ship_mask[x, y] = True
-
 
 # Visualization
 plt.figure(figsize=(6,6))

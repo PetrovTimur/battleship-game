@@ -10,27 +10,30 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def evaluate(n_games=100):
     # Load model
-    checkpoint_path = 'checkpoints/dqn_battleship1_5000.pt'
+    checkpoint_path = 'checkpoints/ppo_1.pt'
     env = BattleshipEnv()
-    policy_net = DQN(n_actions=env.n_actions).to(device)
-    # policy_net.load_state_dict(torch.load('dqn_battleship_masked2.pth', map_location=device))
+    policy_net = DQN(n_actions=env.size * env.size).to(device)
     policy_net.load_state_dict(torch.load(checkpoint_path, map_location=device))
     policy_net.eval()
 
     moves_list = []
     for _ in range(n_games):
-        obs = env.reset()
-        state = torch.tensor(obs, dtype=torch.float32, device=device).unsqueeze(0)
+        obs, info = env.reset()
+        state = torch.tensor(obs["observation"], dtype=torch.float32, device=device).unsqueeze(0)
         done = False
         moves = 0
         while not done:
             with torch.no_grad():
                 q = policy_net(state)
                 mask = torch.full_like(q, float('-inf'))
-                mask[0, env.legal_actions()] = 0
+                legal_mask = torch.tensor(obs["mask"], dtype=torch.bool, device=device)
+                mask[0, legal_mask] = 0
                 action = (q + mask).argmax(1).item()
-            obs2, _, done = env.step(action)
-            state = torch.tensor(obs2, dtype=torch.float32, device=device).unsqueeze(0) if not done else None
+            obs2, _, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
+            if not done:
+                state = torch.tensor(obs2["observation"], dtype=torch.float32, device=device).unsqueeze(0)
+                obs = obs2
             moves += 1
         moves_list.append(moves)
 
@@ -71,4 +74,4 @@ def evaluate(n_games=100):
     plt.show()
 
 if __name__ == "__main__":
-    evaluate(n_games=1000)
+    evaluate(n_games=100)
