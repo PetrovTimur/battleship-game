@@ -1,18 +1,30 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from env import BattleshipEnv
-from models import DQN
+from env.battleship_env import BattleshipEnv
+from models import DQN, CNN, MLP
 
 # Load trained model
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-checkpoint_path = 'checkpoints/ppo_1.pt'
+# checkpoint_path = 'Fleet-AI/fleetai-training/models/testPPO_flat_flat_discount-0.7/ppo.pt'
+checkpoint_path = 'checkpoints/ppo_53.pt'
+# checkpoint_path = 'checkpoints/dqn_9.pt'
 env = BattleshipEnv()
-policy_net = DQN(n_actions=env.size * env.size).to(device)
-policy_net.load_state_dict(torch.load(checkpoint_path, map_location=device))
-policy_net.eval()
 
-print(sum(p.numel() for p in policy_net.parameters()))
+# policy_net = DQN(n_actions=env.size * env.size).to(device)
+policy_net = MLP(in_channels=2, n_size=10, n_actions=100).to(device)
+# policy_net_state_dict = policy_net.state_dict()
+#
+# state_dict = torch.load(checkpoint_path)['actor']
+# for key in state_dict:
+#     name = key.split('.')
+#     name[0] = 'linear'
+#     new_name = '.'.join(name)
+#     policy_net_state_dict[new_name] = state_dict[key]
+
+policy_net.load_state_dict(torch.load(checkpoint_path, map_location=device))
+# policy_net.load_state_dict(policy_net_state_dict)
+policy_net.eval()
 
 obs, info = env.reset()
 state = torch.tensor(obs["observation"], device=device).unsqueeze(0)
@@ -63,3 +75,5 @@ for x in range(env.size):
 plt.title('Order of Shots by DQN (Ships in Red)')
 plt.axis('off')
 plt.show()
+
+print(step)

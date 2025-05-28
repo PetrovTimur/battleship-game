@@ -70,7 +70,7 @@ def surrounding(coords):
 
 def random_ships_matrix():
     """Build a playing field with randomly placed ships."""
-    sizes = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
+    sizes = [5, 4, 3, 3, 2]
     number = 1
     cells = [[None]*10 for _ in range(10)]
     angles = {0: 'w',
@@ -128,7 +128,7 @@ def random_ships(cells):
     :returns: dict
     """
     ships_coords = {}
-    for i in range(10):
+    for i in range(5):
         coords = []
         for x in range(len(cells)):
             for y in range(len(cells)):

@@ -10,3 +10,4 @@ dist
 .doit*
 *.egg-info
 config.ini
+.idea

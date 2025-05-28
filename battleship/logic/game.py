@@ -4,7 +4,7 @@ from .ai import random_ships, random_ships_matrix
 from battleship.translation import _
 
 FIELD_SIZE = 10
-TOTAL_SHIPS = 10
+TOTAL_SHIPS = 5
 
 
 class Ship:
@@ -43,10 +43,11 @@ class Field:
 
     def __init__(self):
         """Initialize all params."""
-        self.cells = [([0] * 10) for i in range(10)]
-        self.ships = [Ship(4), Ship(3), Ship(3),
-                      Ship(2), Ship(2), Ship(2),
-                      Ship(1), Ship(1), Ship(1), Ship(1)]
+        self.cells = [([0] * 10) for _ in range(10)]
+        # self.ships = [Ship(4), Ship(3), Ship(3),
+        #               Ship(2), Ship(2), Ship(2),
+        #               Ship(1), Ship(1), Ship(1), Ship(1)]
+        self.ships = [Ship(5), Ship(4), Ship(3), Ship(3), Ship(2)]
         self.placed = 0
         self.sank = []
 
@@ -93,7 +94,7 @@ class Field:
         self.placed = 0
         self.cells = random_ships_matrix()
         ships = random_ships(self.cells)
-        for i in range(10):
+        for i in range(5):
             self.place(ships[i + 1])
 
     def check_placed(self):
@@ -107,9 +108,11 @@ class Field:
         """Clear the list of placed ships."""
         self.placed = 0
         self.cells = [([0] * 10) for i in range(10)]
-        self.ships = [Ship(4), Ship(3), Ship(3),
-                      Ship(2), Ship(2), Ship(2),
-                      Ship(1), Ship(1), Ship(1), Ship(1)]
+        # self.ships = [Ship(4), Ship(3), Ship(3),
+        #               Ship(2), Ship(2), Ship(2),
+        #               Ship(1), Ship(1), Ship(1), Ship(1)]
+        self.ships = [Ship(5), Ship(4), Ship(3), Ship(3), Ship(2)]
+
 
     def place(self, coords):
         """
